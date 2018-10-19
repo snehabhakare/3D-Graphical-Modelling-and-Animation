@@ -4,7 +4,7 @@
 extern GLfloat c_xrot,c_yrot,c_zrot, c_xpos, c_ypos, c_zpos, c_up_x, c_up_y, c_up_z;
 extern bool enable_perspective;
 extern csX75::HNode* node1, *node2, *node3,*curr_node;
-extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes;
+extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes;
 int ch =0;
 bool op=false;
 extern bool mode;
@@ -67,6 +67,9 @@ namespace csX75
 					 ((curr_node == phineas_nodes[7] || curr_node == phineas_nodes[14]) && p[4] > -30) ||	//torso, neck movement 
 					 ((curr_node == phineas_nodes[15]) && p[4] > -180))	//head movement
 				curr_node->dec_ry();
+			// restrict the room door's rotation to y-direction only
+			else if( curr_node == room_nodes[10] && p[4] > -90)
+				curr_node->dec_ry();
 		}
 	    else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS && !mode)
 	    {
@@ -89,6 +92,9 @@ namespace csX75
 					 ((curr_node == phineas_nodes[10] || curr_node == phineas_nodes[13]) && p[4] < 30) ||	//hand movement 
 					 ((curr_node == phineas_nodes[7] || curr_node == phineas_nodes[14]) && p[4] < 30) ||	//torso, neck movement 
 					 ((curr_node == phineas_nodes[15]) && p[4] < 0))	//head movement
+				curr_node->inc_ry();
+			// restrict the room door's rotation to y-direction only
+			else if( curr_node == room_nodes[10] && p[4] < 0)
 				curr_node->inc_ry();
 	    }
     
@@ -222,7 +228,7 @@ namespace csX75
 				std::cout<<"Individual rotation mode"<<std::endl;
 				c_xpos = 0.0;
 				c_ypos = 0.0;
-				c_zpos = 10.0;
+				c_zpos = 100.0;
 				c_up_x = 0.0;
 				c_up_y = 1.0;
 				c_up_z = 0.0;
@@ -305,6 +311,13 @@ namespace csX75
 		curr_node = perry_nodes[0];
 		std::cout<<"Perry selected"<<std::endl;
 		ch=3;
+		op=true;
+    }
+    else if (key == GLFW_KEY_V && action == GLFW_PRESS && (!op || (op && ch!=4)) && !mode)
+    {	//select room's door
+		curr_node = room_nodes[10];
+		std::cout<<"Room Door selected"<<std::endl;
+		ch=4;
 		op=true;
     }
 

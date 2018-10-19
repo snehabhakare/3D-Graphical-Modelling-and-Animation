@@ -15,6 +15,87 @@ glm::mat4 modelview_matrix;
 GLuint uModelViewMatrix;
 glm::vec4 origin = glm::vec4(0.0);
 
+//----------------------------------------------------------------
+void room()
+{
+    csX75::primitive p;
+    glm::vec4 color_wall = glm::vec4(1.0, 0.0, 1.0, 1.0);
+    glm::vec4 color_door = glm::vec4(0.0, 1.0, 1.0, 1.0);
+    glm::vec4 color_window = glm::vec4(1.0, 1.0, 0.0, 1.0);
+    
+    // floor -> 0 
+    p = p.draw_cuboid(color_wall, 25.0,25.0,1.0, origin);
+    node4 = new csX75::HNode(NULL,p);
+    node4->change_parameters(0.0,-10.0,0.0,90.0,0.0,0.0);
+    room_nodes.push_back(node4);
+    
+    // left wall -> 1
+    p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p);
+    node4->change_parameters(-12.0,0.0,-12.0,0.0,-90.0,0.0);
+    room_nodes.push_back(node4);
+
+    // right wall -> 2 
+    p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p);
+    node4->change_parameters(12.0,0.0,-12.0,0.0,-90.0,0.0);
+    room_nodes.push_back(node4);
+
+    // back wall(left fourth) -> 3
+    p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p);
+    node4->change_parameters(-8.5,12.0,-12.0,-90.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // back wall(top fourth) -> 4
+    p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[3],p);
+    node4->change_parameters(8.5,8.75,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // back wall(right fourth) -> 5
+    p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[4],p);
+    node4->change_parameters(9.35,-9.0,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // back wall(bottom fourth) -> 6 
+    p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[3],p);
+    node4->change_parameters(8.5,-8.75,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // window -> 7
+    p = p.draw_window(color_window, 12.5,11.5,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[3],p);
+    node4->change_parameters(8.5,0.0,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // front wall(left half) -> 8
+    p = p.draw_cuboid(color_wall, 12.5,23.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p);
+    node4->change_parameters(-5.25,-12.0,-12.0,-90.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // front wall(right top half) -> 9
+    p = p.draw_cuboid(color_wall, 11.5,11.5,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[8],p);
+    node4->change_parameters(12.0,5.75,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // door -> 10
+    p = p.draw_cuboid(color_door, 11.5,11.5,1.0, glm::vec4(0,0,0,0));// fix rotation
+    node4 = new csX75::HNode(room_nodes[8],p);
+    node4->change_parameters(12.0,-5.75,0.0,0.0,0.0,0.0);
+    room_nodes.push_back(node4);
+
+    // ceiling -> 11
+    /*p = p.draw_cuboid(color_wall, 25.0,25.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p);
+    node4->change_parameters(0.0,0.0,-23.5,0.0,0.0,0.0);
+    wall_nodes.push_back(node4);*/
+}
+
 //-----------------------------------------------------------------
 void box()
 {
@@ -362,7 +443,7 @@ void initBuffersGL(void)
   node3->change_parameters(0.0,0.0,0.0,0.0,0.0,0.0);
   scene_nodes.push_back(node3);
   
-  
+  room();
   phineas();
   box();
   perry();
@@ -403,13 +484,14 @@ void renderGL(void)
      matrixStack.clear();
     if(mode)
     {
+	    renderNode(room_nodes[0], 0.0);
 	    renderNode(box_nodes[0], -6.0);
 	    renderNode(phineas_nodes[0], 6.0);
 	    renderNode(perry_nodes[0], 0.0);
     }
     else
     {
-	    projection_matrix = glm::ortho(-14.0, 14.0, -14.0, 14.0, 20.0, -40.0);
+	    projection_matrix = glm::ortho(-14.0, 14.0, -14.0, 14.0, 200.0, -400.0);
  
 	    c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_xrot), glm::vec3(1.0f,0.0f,0.0f));
 	    c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_yrot), glm::vec3(0.0f,1.0f,0.0f));
@@ -425,6 +507,7 @@ void renderGL(void)
 
 	    matrixStack.push_back(view_matrix);
 
+	    room_nodes[0]->render_tree();
 	    box_nodes[0]->render_tree();
 	    perry_nodes[0]->render_tree();
 	    phineas_nodes[0]->render_tree();

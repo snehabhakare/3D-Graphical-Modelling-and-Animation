@@ -263,4 +263,40 @@ namespace csX75
 		quad(positions, clr, 14, 7, 3, 15);
     	return *this;
 	}
+
+	primitive primitive::draw_window(glm::vec4 clr, double x, double y, double z, glm::vec4 o)
+	{
+		num_vertices = 0;
+		points.clear();
+		color.clear();
+		origin = o;
+		glm::vec4 positions[16] = {
+			glm::vec4(-x/2, -y/2,  z/2, 1.0) - o,
+			glm::vec4(-x/2,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/2,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/2, -y/2,  z/2, 1.0) - o,
+			glm::vec4(-x/2, -y/2, -z/2, 1.0) - o,
+			glm::vec4(-x/2,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/2,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/2, -y/2, -z/2, 1.0) - o,
+
+			glm::vec4(-x/4, -y/2,  z/2, 1.0) - o,
+			glm::vec4(-x/4,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/4,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/4, -y/2,  z/2, 1.0) - o,
+			glm::vec4(-x/4, -y/2, -z/2, 1.0) - o,
+			glm::vec4(-x/4,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/4,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/4, -y/2, -z/2, 1.0) - o
+		};
+
+		quad(positions, clr, 13, 12, 8, 9 );
+		quad(positions, clr, 2, 3, 7, 6 );
+		quad(positions, clr, 3, 0, 4, 7 );
+		quad(positions, clr, 6, 5, 1, 2 );
+		quad(positions, clr, 14, 15, 11, 10 );
+		quad(positions, clr, 5, 4, 0, 1 );
+
+    	return *this;
+	}
 }
