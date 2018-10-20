@@ -47,6 +47,9 @@ csX75::HNode* node5;
 csX75::HNode* node6;
 csX75::HNode* node7;
 csX75::HNode* node8;
+csX75::HNode* node9;
+csX75::HNode* node10;
+csX75::HNode* node11;
 csX75::HNode* node;
 
 std::vector<csX75::HNode*> scene_nodes;
@@ -57,7 +60,10 @@ std::vector<csX75::HNode*> room_nodes;
 std::vector<csX75::HNode*> table_nodes;
 std::vector<csX75::HNode*> wall_light_nodes;
 std::vector<csX75::HNode*> side_table_nodes;
+std::vector<csX75::HNode*> side_rack_nodes;
 std::vector<csX75::HNode*> lamp_nodes;
+std::vector<csX75::HNode*> sofa_nodes;
+std::vector<csX75::HNode*> chair_nodes;
 //-------------------------------------------------------------------------
 
 #endif
