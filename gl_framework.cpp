@@ -3,8 +3,8 @@
 
 extern GLfloat c_xrot,c_yrot,c_zrot, c_xpos, c_ypos, c_zpos, c_up_x, c_up_y, c_up_z;
 extern bool enable_perspective;
-extern csX75::HNode* node1, *node2, *node3,*curr_node;
-extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes;
+extern csX75::HNode* node1, *node2, *node3,*curr_node, *node3, *node4, *node5;
+extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes;
 int ch =0;
 bool op=false;
 extern bool mode;
