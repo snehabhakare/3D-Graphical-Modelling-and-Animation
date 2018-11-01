@@ -1,8 +1,9 @@
 #include "gl_framework.hpp"
 #include "hierarchy_node.hpp"
 
-extern GLfloat c_xrot,c_yrot,c_zrot, c_xpos, c_ypos, c_zpos, c_up_x, c_up_y, c_up_z;
+extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot;
 extern bool enable_perspective;
+extern int light;
 extern csX75::HNode* node1, *node2, *node3,*curr_node, *node3, *node4, *node5;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes;
 int ch =0;
@@ -226,7 +227,7 @@ namespace csX75
 			if(mode == false)
 			{
 				std::cout<<"Individual rotation mode"<<std::endl;
-				c_xpos = 0.0;
+				/*c_xpos = 0.0;
 				c_ypos = 0.0;
 				c_zpos = 100.0;
 				c_up_x = 0.0;
@@ -234,7 +235,7 @@ namespace csX75
 				c_up_z = 0.0;
 				c_xrot = 0.0;
 				c_yrot = 0.0;
-				c_zrot = 0.0;
+				c_zrot = 0.0;*/
 				curr_node = scene_nodes[0];
 				op=false;
 				ch=0;
@@ -243,53 +244,77 @@ namespace csX75
 				std::cout<<"Global rotation mode"<<std::endl;
 		}
     
+    else if (key == GLFW_KEY_G && action == GLFW_PRESS)
+    {
+	if(light==0)
+	{
+		std::cout<<"Light 1 On"<<std::endl;
+		light=1;
+	}
+	else if(light==1)
+	{
+		std::cout<<"Light 2 On"<<std::endl;
+		light=2;
+	}
+	else if(light==2)
+	{
+		std::cout<<"Lights 1 and 2 On"<<std::endl;
+		light=3;
+	}
+	else
+	{
+		std::cout<<"Lights 1 and 2 Off"<<std::endl;
+		light=0;
+	}
+    }
+
     else if (key == GLFW_KEY_A && action == GLFW_PRESS && mode)
     {
-	c_xrot+=10;
+	xrot+=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
     else if (key == GLFW_KEY_D && action == GLFW_PRESS && mode)
     {
-	c_xrot-=10;
+	xrot-=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
     else if (key == GLFW_KEY_Z && action == GLFW_PRESS && mode)
     {
-	c_yrot+=10;
+	yrot+=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
     else if (key == GLFW_KEY_C && action == GLFW_PRESS && mode)
     {
-	c_yrot-=10;
+	yrot-=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
     else if (key == GLFW_KEY_S && action == GLFW_PRESS && mode)
     {
-	c_zrot+=10;
+	zrot+=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
     else if (key == GLFW_KEY_X && action == GLFW_PRESS && mode)
     {
-	c_zrot-=10;
+	zrot-=10;
 	glm::vec4 c = curr_node->get_centroid();
-	c_xpos = c[0];
-	c_ypos = c[1];
-	c_zpos = c[2];
+	xpos = c[0];
+	ypos = c[1];
+	zpos = c[2];
     }
 
     else if (key == GLFW_KEY_B && action == GLFW_PRESS && (!op || (op && ch!=1)) && !mode)

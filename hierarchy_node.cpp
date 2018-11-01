@@ -3,8 +3,11 @@
 #include <iostream>
 #include <cstdlib>
 
-extern GLuint vPosition,vColor,uModelViewMatrix;
+extern GLuint vPosition,vColor,vNormal,uModelViewMatrix, normalMatrix,viewMatrix, Light;
+extern glm::mat4 view_matrix;
 extern std::vector<glm::mat4> matrixStack;
+extern glm::mat3 normal_matrix;
+extern int light;
 
 namespace csX75
 {
@@ -12,6 +15,7 @@ namespace csX75
 		num_vertices = p_model.num_vertices;
 		vertex_buffer_size = sizeof(p_model.points[0]) * p_model.points.size();
 		color_buffer_size = sizeof(p_model.color[0]) * p_model.color.size();
+		normal_buffer_size = sizeof(p_model.normal[0]) * p_model.normal.size();
 		// initialize vao and vbo of the object;
 		//Ask GL for a Vertex Attribute Objects (vao)
 		glGenVertexArrays (1, &vao);
@@ -22,9 +26,10 @@ namespace csX75
 		glBindVertexArray (vao);
 		glBindBuffer (GL_ARRAY_BUFFER, vbo);
 		
-		glBufferData (GL_ARRAY_BUFFER, vertex_buffer_size + color_buffer_size, NULL, GL_STATIC_DRAW);
+		glBufferData (GL_ARRAY_BUFFER, vertex_buffer_size + color_buffer_size + normal_buffer_size, NULL, GL_STATIC_DRAW);
 		glBufferSubData( GL_ARRAY_BUFFER, 0, vertex_buffer_size, &p_model.points[0] );
 		glBufferSubData( GL_ARRAY_BUFFER, vertex_buffer_size, color_buffer_size, &p_model.color[0] );
+		glBufferSubData( GL_ARRAY_BUFFER, vertex_buffer_size + color_buffer_size, normal_buffer_size, &p_model.normal[0] );
 
 		//setup the vertex array as per the shader
 		glEnableVertexAttribArray( vPosition );
@@ -33,6 +38,8 @@ namespace csX75
 		glEnableVertexAttribArray( vColor );
 		glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size));
 
+		glEnableVertexAttribArray( vNormal );
+		glVertexAttribPointer( vNormal, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vertex_buffer_size + color_buffer_size));
 
 		// set parent
 
@@ -141,7 +148,11 @@ namespace csX75
 		//matrixStack multiply
 		glm::mat4* ms_mult = multiply_stack(matrixStack);
 
+		glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, glm::value_ptr(view_matrix));
 		glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(*ms_mult));
+		normal_matrix = glm::mat3(glm::transpose (glm::inverse(glm::mat4(glm::inverse(view_matrix) * *ms_mult))));
+		glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+		glUniform1i(Light,light);
 		glBindVertexArray (vao);
 		glDrawArrays(GL_TRIANGLES, 0, model.points.size());
 

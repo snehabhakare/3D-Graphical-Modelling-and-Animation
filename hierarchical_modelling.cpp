@@ -5,14 +5,13 @@ GLuint shaderProgram;
 glm::mat4 rotation_matrix;
 glm::mat4 projection_matrix;
 glm::mat4 c_rotation_matrix;
+glm::mat4 model_matrix;
 glm::mat4 lookat_matrix;
 
-glm::mat4 model_matrix;
 glm::mat4 view_matrix;
+glm::mat3 normal_matrix;
 
-glm::mat4 modelview_matrix;
-
-GLuint uModelViewMatrix;
+GLuint uModelViewMatrix, normalMatrix, viewMatrix, Light;
 glm::vec4 origin = glm::vec4(0.0);
 
 //----------------------------------------------------------------
@@ -100,7 +99,7 @@ void room()
 void table()
 {
     csX75::primitive p;
-    glm::vec4 color_table = glm::vec4(0.5, 0.5, 0.5, 1.0);
+    glm::vec4 color_table = glm::vec4(0.8, 1.0, 1.0, 1.0);
 
     // plane -> 0 
     p = p.draw_cuboid(color_table, 10.0,10.0,1.0, origin);
@@ -183,6 +182,7 @@ void side_table()
     node7->change_parameters(2.0,2.0,0.5,0.0,-90.0,0.0);
     side_table_nodes.push_back(node7);
 }
+
 
 //-----------------------------------------------------------------
 void lamp()
@@ -387,6 +387,7 @@ void sofa()
     node10->change_parameters(-0.5,2.0,2.0,90.0,90.0,90.0);
     sofa_nodes.push_back(node10);
 }
+
 
 //-----------------------------------------------------------------
 void chair()
@@ -770,7 +771,11 @@ void initBuffersGL(void)
   // getting the attributes from the shader program
   vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
   vColor = glGetAttribLocation( shaderProgram, "vColor" ); 
+  vNormal = glGetAttribLocation( shaderProgram, "vNormal" );
   uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+  normalMatrix =  glGetUniformLocation( shaderProgram, "normalMatrix");
+  viewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
+  Light = glGetUniformLocation( shaderProgram, "Light");
 
   csX75::primitive p;
   p = p.draw_cuboid(glm::vec4(0.0, 0.0, 0.0, 0.0), 100.0,100.0,100.0, origin);
@@ -795,26 +800,31 @@ void initBuffersGL(void)
 
 void renderNode(csX75::HNode* curr, float x)
 {
-    projection_matrix = glm::ortho(-14.0, 14.0, -14.0, 14.0, 20.0, -40.0);
+    //projection_matrix = glm::ortho(-14.0, 14.0, -14.0, 14.0, 20.0, -40.0);
    
     matrixStack.clear();
     curr_node = curr;
 
-    c_rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(c_xpos-x), -c_ypos, -c_zpos));
+    rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(xpos-x), -ypos, -zpos));
+    rotation_matrix = glm::rotate(rotation_matrix, glm::radians(xrot), glm::vec3(1.0f,0.0f,0.0f));
+    rotation_matrix = glm::rotate(rotation_matrix, glm::radians(yrot), glm::vec3(0.0f,1.0f,0.0f));
+    rotation_matrix = glm::rotate(rotation_matrix, glm::radians(zrot), glm::vec3(0.0f,0.0f,1.0f));
+    rotation_matrix = glm::translate(rotation_matrix, glm::vec3((xpos-x), ypos, zpos));
+    model_matrix = rotation_matrix;
+
+    projection_matrix = glm::ortho(-14.0, 14.0, -14.0, 14.0, 200.0, -400.0);
+
     c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_xrot), glm::vec3(1.0f,0.0f,0.0f));
     c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_yrot), glm::vec3(0.0f,1.0f,0.0f));
     c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_zrot), glm::vec3(0.0f,0.0f,1.0f));
-    c_rotation_matrix = glm::translate(c_rotation_matrix, glm::vec3((c_xpos-x), c_ypos, c_zpos));
-
 
     //c_rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(c_xpos, 0.0, 0.0));
     glm::vec4 c_pos = glm::vec4(c_xpos,c_ypos,c_zpos, 1.0)*c_rotation_matrix;
     glm::vec4 c_up = glm::vec4(c_up_x,c_up_y,c_up_z, 1.0)*c_rotation_matrix;
     //Creating the lookat matrix
     lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
-
-    view_matrix = projection_matrix*c_rotation_matrix;
-
+    view_matrix = projection_matrix*lookat_matrix*model_matrix;
+    
     matrixStack.push_back(view_matrix);
 
     curr_node->render_tree();
@@ -853,7 +863,6 @@ void renderGL(void)
 	    lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
 
 	    view_matrix = projection_matrix*lookat_matrix;
-
 	    matrixStack.push_back(view_matrix);
 
 	    room_nodes[0]->render_tree();
