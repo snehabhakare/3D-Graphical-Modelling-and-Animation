@@ -1,6 +1,9 @@
 #include "hierarchical_modelling.hpp"
+#include "texture.cpp"
 
-GLuint shaderProgram;
+GLuint shaderProgram1;
+GLuint shaderProgram2;
+GLuint t;
 
 glm::mat4 rotation_matrix;
 glm::mat4 projection_matrix;
@@ -13,84 +16,88 @@ glm::mat3 normal_matrix;
 
 GLuint uModelViewMatrix, normalMatrix, viewMatrix, Light;
 glm::vec4 origin = glm::vec4(0.0);
+glm::vec4 white = glm::vec4(1.0);
+
+  // Load Textures 
+GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wood, tex_wood_chair, tex_st, tex_box,tex_light;
 
 //----------------------------------------------------------------
 void room()
 {
     csX75::primitive p;
-    glm::vec4 color_wall = glm::vec4(1.0, 0.0, 1.0, 1.0);
-    glm::vec4 color_door = glm::vec4(0.0, 1.0, 1.0, 1.0);
-    glm::vec4 color_window = glm::vec4(1.0, 1.0, 0.0, 1.0);
+    glm::vec4 color_wall = white;
+    glm::vec4 color_door = white;
+    glm::vec4 color_window = white;
     
     // floor -> 0 
     p = p.draw_cuboid(color_wall, 25.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(NULL,p);
+    node4 = new csX75::HNode(NULL,p, tex_floor);
     node4->change_parameters(0.0,-10.0,0.0,90.0,0.0,0.0);
     room_nodes.push_back(node4);
     
     // left wall -> 1
     /*p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
     node4->change_parameters(-12.0,0.0,-12.0,0.0,-90.0,0.0);
     room_nodes.push_back(node4);
 
     // right wall -> 2 
     p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
     node4->change_parameters(12.0,0.0,-12.0,0.0,-90.0,0.0);
     room_nodes.push_back(node4);
 
     // back wall(left fourth) -> 3
     p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
     node4->change_parameters(-8.5,12.0,-12.0,-90.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // back wall(top fourth) -> 4
     p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p);
+    node4 = new csX75::HNode(room_nodes[3],p, tex_wall);
     node4->change_parameters(8.5,8.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // back wall(right fourth) -> 5
     p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[4],p);
+    node4 = new csX75::HNode(room_nodes[4],p, tex_wall);
     node4->change_parameters(9.35,-9.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // back wall(bottom fourth) -> 6 
     p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p);
+    node4 = new csX75::HNode(room_nodes[3],p, tex_wall);
     node4->change_parameters(8.5,-8.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // window -> 7
     p = p.draw_window(color_window, 12.5,11.5,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p);
+    node4 = new csX75::HNode(room_nodes[3],p, tex_glass);
     node4->change_parameters(8.5,0.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // front wall(left half) -> 8
     p = p.draw_cuboid(color_wall, 12.5,23.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
     node4->change_parameters(-5.25,-12.0,-12.0,-90.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // front wall(right top half) -> 9
     p = p.draw_cuboid(color_wall, 11.5,11.5,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[8],p);
+    node4 = new csX75::HNode(room_nodes[8],p, tex_wall);
     node4->change_parameters(12.0,5.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
     // door -> 10
     p = p.draw_cuboid(color_door, 11.5,11.5,1.0, glm::vec4(0,0,0,0));// fix rotation
-    node4 = new csX75::HNode(room_nodes[8],p);
+    node4 = new csX75::HNode(room_nodes[8],p, tex_wood);
     node4->change_parameters(12.0,-5.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);*/
 
     // ceiling -> 11
     /*p = p.draw_cuboid(color_wall, 25.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_ceil);
     node4->change_parameters(0.0,0.0,-23.5,0.0,0.0,0.0);
     room_nodes.push_back(node4);*/
 }
@@ -99,35 +106,35 @@ void room()
 void table()
 {
     csX75::primitive p;
-    glm::vec4 color_table = glm::vec4(0.8, 1.0, 1.0, 1.0);
+    glm::vec4 color_table = white;
 
     // plane -> 0 
     p = p.draw_cuboid(color_table, 10.0,10.0,1.0, origin);
-    node5 = new csX75::HNode(NULL,p);
+    node5 = new csX75::HNode(NULL,p, tex_wood);
     node5->change_parameters(0.0,-5.0,0.0,90.0,0.0,0.0);
     table_nodes.push_back(node5);
 
     // leg1 -> 1 
     p = p.draw_cuboid(color_table, 5.0,1.0,0.5, origin);
-    node5 = new csX75::HNode(table_nodes[0],p);
+    node5 = new csX75::HNode(table_nodes[0],p, tex_wood);
     node5->change_parameters(-3.0,-3.0,2.0,0.0,-90.0,0.0);
     table_nodes.push_back(node5);
 
     // leg2 -> 2 
     p = p.draw_cuboid(color_table, 5.0,1.0,0.5, origin);
-    node5 = new csX75::HNode(table_nodes[0],p);
+    node5 = new csX75::HNode(table_nodes[0],p, tex_wood);
     node5->change_parameters(-3.0,3.0,2.0,0.0,-90.0,0.0);
     table_nodes.push_back(node5);  
 
     // leg3 -> 3 
     p = p.draw_cuboid(color_table, 5.0,1.0,0.5, origin);
-    node5 = new csX75::HNode(table_nodes[0],p);
+    node5 = new csX75::HNode(table_nodes[0],p, tex_wood);
     node5->change_parameters(3.0,-3.0,2.0,0.0,-90.0,0.0);
     table_nodes.push_back(node5);
 
     // leg4 -> 4 
     p = p.draw_cuboid(color_table, 5.0,1.0,0.5, origin);
-    node5 = new csX75::HNode(table_nodes[0],p);
+    node5 = new csX75::HNode(table_nodes[0],p, tex_wood);
     node5->change_parameters(3.0,3.0,2.0,0.0,-90.0,0.0);
     table_nodes.push_back(node5);
     
@@ -137,11 +144,11 @@ void table()
 void wall_light()
 {
     csX75::primitive p;
-    glm::vec4 color_light = glm::vec4(1.0, 1.0, 1.0, 1.0);
+    glm::vec4 color_light = white;
 
     // wall light -> 0 
     p = p.draw_cuboid(color_light, 2.0,2.0,0.5, origin);
-    node6 = new csX75::HNode(NULL,p);
+    node6 = new csX75::HNode(NULL,p, tex_light);
     node6->change_parameters(-11.0,10.0,0.0,45.0,90.0,0.0);
     wall_light_nodes.push_back(node6);
 }
@@ -150,35 +157,35 @@ void wall_light()
 void side_table()
 {
     csX75::primitive p;
-    glm::vec4 color_table = glm::vec4(0.5, 0.5, 0.5, 1.0);
+    glm::vec4 color_table = white;
 
     // plane -> 0 
     p = p.draw_cuboid(color_table, 5.0,5.0,0.5, origin);
-    node7 = new csX75::HNode(NULL,p);
+    node7 = new csX75::HNode(NULL,p, tex_wood_chair);
     node7->change_parameters(9.0,-8.0,0.0,90.0,0.0,0.0);
     side_table_nodes.push_back(node7);
 
     // leg1 -> 1 
     p = p.draw_cuboid(color_table, 2.0,0.5,0.25, origin);
-    node7 = new csX75::HNode(side_table_nodes[0],p);
+    node7 = new csX75::HNode(side_table_nodes[0],p, tex_wood_chair);
     node7->change_parameters(-2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_table_nodes.push_back(node7);
 
     // leg2 -> 2 
     p = p.draw_cuboid(color_table, 2.0,0.5,0.25, origin);
-    node7 = new csX75::HNode(side_table_nodes[0],p);
+    node7 = new csX75::HNode(side_table_nodes[0],p, tex_wood_chair);
     node7->change_parameters(-2.0,2.0,0.5,0.0,-90.0,0.0);
     side_table_nodes.push_back(node7);  
 
     // leg3 -> 3 
     p = p.draw_cuboid(color_table, 2.0,0.5,0.25, origin);
-    node7 = new csX75::HNode(side_table_nodes[0],p);
+    node7 = new csX75::HNode(side_table_nodes[0],p, tex_wood_chair);
     node7->change_parameters(2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_table_nodes.push_back(node7);
 
     // leg4 -> 4 
     p = p.draw_cuboid(color_table, 2.0,0.5,0.25, origin);
-    node7 = new csX75::HNode(side_table_nodes[0],p);
+    node7 = new csX75::HNode(side_table_nodes[0],p, tex_wood_chair);
     node7->change_parameters(2.0,2.0,0.5,0.0,-90.0,0.0);
     side_table_nodes.push_back(node7);
 }
@@ -188,25 +195,43 @@ void side_table()
 void lamp()
 {
     csX75::primitive p;
-    glm::vec4 color_light = glm::vec4(1.0, 1.0, 1.0, 1.0);
-    glm::vec4 color_light_body = glm::vec4(0.0, 0.0, 1.0, 1.0);
+    glm::vec4 color_light = white;
+    glm::vec4 color_light_body = white;
 
     // lamp_head -> 0 
-    p = p.draw_trapezium(color_light, 4.0,4.0,3.0, origin);
-    node8 = new csX75::HNode(NULL,p);
+    p = p.draw_trapezium_op(color_light, 4.0,4.0,3.0, origin);
+    node8 = new csX75::HNode(NULL,p, tex_pat);
     node8->change_parameters(10.0,3.0,0.0,90.0,180.0,180.0);
     lamp_nodes.push_back(node8);
 
     // lamp_stick -> 1
     p = p.draw_cuboid(color_light_body, 10.0,0.5,0.25, origin);
-    node8 = new csX75::HNode(lamp_nodes[0],p);
+    node8 = new csX75::HNode(lamp_nodes[0],p, tex_st);
     node8->change_parameters(0.0,0.0,-5.0,0.0,90.0,0.0);
     lamp_nodes.push_back(node8);
 
-    // lamp_body -> 2
+    // lamp_base -> 2
     p = p.draw_cuboid(color_light_body, 1.0,2.0,2.0, origin);
-    node8 = new csX75::HNode(lamp_nodes[1],p);
+    node8 = new csX75::HNode(lamp_nodes[1],p, tex_st);
     node8->change_parameters(5.25,0.0,0.0,0.0,0.0,0.0);
+    lamp_nodes.push_back(node8);
+
+    // lamp_handle_left -> 3
+    p = p.draw_cuboid(color_light_body, 3.0,0.5,0.25, origin);
+    node8 = new csX75::HNode(lamp_nodes[1],p, tex_st);
+    node8->change_parameters(-4.0,0.0,-0.25,0.0,90.0,0.0);
+    lamp_nodes.push_back(node8);
+
+    // lamp_handle_right -> 4
+    p = p.draw_cuboid(color_light_body, 3.0,0.5,0.25, origin);
+    node8 = new csX75::HNode(lamp_nodes[1],p, tex_st);
+    node8->change_parameters(-4.0,0.0,0.25,0.0,90.0,0.0);
+    lamp_nodes.push_back(node8);
+
+    // lamp_bulb -> 5
+    p = p.draw_trapezium(color_light,0.6, 0.5, 0.25, origin);
+    node8 = new csX75::HNode(lamp_nodes[1],p, tex_light);
+    node8->change_parameters(-5.5,0.0,0.0,0.0,90.0,0.0);
     lamp_nodes.push_back(node8);
 }
 
@@ -214,95 +239,95 @@ void lamp()
 void side_rack()
 {
     csX75::primitive p;
-    glm::vec4 color_rack = glm::vec4(0.5, 0.0, 0.5, 1.0);
+    glm::vec4 color_rack = white;
 
     // plane1 -> 0 
     p = p.draw_trapezium(color_rack, 5.0,5.0,0.5, origin);
-    node9 = new csX75::HNode(NULL,p);
+    node9 = new csX75::HNode(NULL,p, tex_glass);
     node9->change_parameters(-10.0,-8.0,7.0,90.0,0.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg11 -> 1 
     p = p.draw_cuboid(color_rack, 2.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[0],p);
+    node9 = new csX75::HNode(side_rack_nodes[0],p, tex_wood_chair);
     node9->change_parameters(-2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg12 -> 2 
     p = p.draw_cuboid(color_rack, 2.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[0],p);
+    node9 = new csX75::HNode(side_rack_nodes[0],p, tex_wood_chair);
     node9->change_parameters(-2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);  
 
     // leg13 -> 3 
     p = p.draw_cuboid(color_rack, 2.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[0],p);
+    node9 = new csX75::HNode(side_rack_nodes[0],p, tex_wood_chair);
     node9->change_parameters(2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg14 -> 4 
     p = p.draw_cuboid(color_rack, 2.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[0],p);
+    node9 = new csX75::HNode(side_rack_nodes[0],p, tex_wood_chair);
     node9->change_parameters(2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // plane2 -> 5 
     p = p.draw_trapezium(color_rack, 5.0,5.0,0.5, origin);
-    node9 = new csX75::HNode(side_rack_nodes[0],p);
+    node9 = new csX75::HNode(side_rack_nodes[0],p, tex_glass);
     node9->change_parameters(0.0,0.0,-2.0,0.0,0.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg21 -> 6 
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[5],p);
+    node9 = new csX75::HNode(side_rack_nodes[5],p, tex_wood_chair);
     node9->change_parameters(-2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg22 -> 7 
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[5],p);
+    node9 = new csX75::HNode(side_rack_nodes[5],p, tex_wood_chair);
     node9->change_parameters(-2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);  
 
     // leg23 -> 8 
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[5],p);
+    node9 = new csX75::HNode(side_rack_nodes[5],p, tex_wood_chair);
     node9->change_parameters(2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg24 -> 9 
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[5],p);
+    node9 = new csX75::HNode(side_rack_nodes[5],p, tex_wood_chair);
     node9->change_parameters(2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // plane3 -> 10 
     p = p.draw_trapezium(color_rack, 5.0,5.0,0.5, origin);
-    node9 = new csX75::HNode(side_rack_nodes[5],p);
+    node9 = new csX75::HNode(side_rack_nodes[5],p, tex_glass);
     node9->change_parameters(0.0,0.0,-2.0,0.0,0.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg31 -> 11
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[10],p);
+    node9 = new csX75::HNode(side_rack_nodes[10],p, tex_wood_chair);
     node9->change_parameters(-2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg32 -> 12
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[10],p);
+    node9 = new csX75::HNode(side_rack_nodes[10],p, tex_wood_chair);
     node9->change_parameters(-2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);  
 
     // leg33 -> 13
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[10],p);
+    node9 = new csX75::HNode(side_rack_nodes[10],p, tex_wood_chair);
     node9->change_parameters(2.0,-2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 
     // leg34 -> 14
     p = p.draw_cuboid(color_rack, 3.0,0.5,0.25, origin);
-    node9 = new csX75::HNode(side_rack_nodes[10],p);
+    node9 = new csX75::HNode(side_rack_nodes[10],p, tex_wood_chair);
     node9->change_parameters(2.0,2.0,0.5,0.0,-90.0,0.0);
     side_rack_nodes.push_back(node9);
 }
@@ -311,79 +336,79 @@ void side_rack()
 void sofa()
 {
     csX75::primitive p;
-    glm::vec4 color_base = glm::vec4(0.5, 0.0, 0.8, 1.0);
-    glm::vec4 color_seat = glm::vec4(0.8, 0.0, 0.5, 1.0);
-    glm::vec4 color_han = glm::vec4(0.2, 0.0, 0.5, 1.0);
+    glm::vec4 color_base = white;
+    glm::vec4 color_seat = white;
+    glm::vec4 color_han = white;
 
     // base left -> 0 
     p = p.draw_cuboid(color_base, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(NULL,p);
+    node10 = new csX75::HNode(NULL,p, tex_sofa);
     node10->change_parameters(-9.0,-8.0,-9.0,-90.0,0.0,0.0);
     sofa_nodes.push_back(node10);
 
     // base right-> 1
     p = p.draw_cuboid(color_base, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(sofa_nodes[0],p);
+    node10 = new csX75::HNode(sofa_nodes[0],p, tex_sofa);
     node10->change_parameters(0.0,-5.0,0.0,0.0,0.0,0.0);
     sofa_nodes.push_back(node10);
 
     // seat left-> 2 
     p = p.draw_cuboid(color_seat, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(sofa_nodes[0],p);
+    node10 = new csX75::HNode(sofa_nodes[0],p, tex_sofa);
     node10->change_parameters(0.0,0.0,1.0,0.0,0.0,0.0);
     sofa_nodes.push_back(node10);
 
     // seat right-> 3
     p = p.draw_cuboid(color_seat, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(sofa_nodes[1],p);
+    node10 = new csX75::HNode(sofa_nodes[1],p, tex_sofa);
     node10->change_parameters(0.0,0.0,1.0,0.0,0.0,0.0);
     sofa_nodes.push_back(node10);
 
     // leg1 -> 4
     p = p.draw_cuboid(color_han, 1.35,0.25,0.5, origin);
-    node10 = new csX75::HNode(sofa_nodes[1],p);
+    node10 = new csX75::HNode(sofa_nodes[1],p, tex_wood_chair);
     node10->change_parameters(-2.0,-2.0,-1.0,0.0,90.0,0.0);
     sofa_nodes.push_back(node10);
 
     // leg2 -> 5
     p = p.draw_cuboid(color_han, 1.35,0.25,0.5, origin);
-    node10 = new csX75::HNode(sofa_nodes[1],p);
+    node10 = new csX75::HNode(sofa_nodes[1],p, tex_wood_chair);
     node10->change_parameters(2.0,-2.0,-1.0,0.0,90.0,0.0);
     sofa_nodes.push_back(node10);
 
     // leg3 -> 6
     p = p.draw_cuboid(color_han, 1.35,0.25,0.5, origin);
-    node10 = new csX75::HNode(sofa_nodes[0],p);
+    node10 = new csX75::HNode(sofa_nodes[0],p, tex_wood_chair);
     node10->change_parameters(-2.0,2.0,-1.0,0.0,90.0,0.0);
     sofa_nodes.push_back(node10);
 
     // leg4 -> 7
     p = p.draw_cuboid(color_han, 1.35,0.25,0.5, origin);
-    node10 = new csX75::HNode(sofa_nodes[0],p);
+    node10 = new csX75::HNode(sofa_nodes[0],p, tex_wood_chair);
     node10->change_parameters(2.0,2.0,-1.0,0.0,90.0,0.0);
     sofa_nodes.push_back(node10);
 
     // back support left-> 8
     p = p.draw_cuboid(color_base, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(sofa_nodes[2],p);
+    node10 = new csX75::HNode(sofa_nodes[2],p, tex_sofa);
     node10->change_parameters(-2.0,0.0,2.0,90.0,90.0,90.0);
     sofa_nodes.push_back(node10);
 
     // back support right-> 9
     p = p.draw_cuboid(color_base, 5.0,5.0,1.0, origin);
-    node10 = new csX75::HNode(sofa_nodes[3],p);
+    node10 = new csX75::HNode(sofa_nodes[3],p, tex_sofa);
     node10->change_parameters(-2.0,0.0,2.0,90.0,90.0,90.0);
     sofa_nodes.push_back(node10);
 
     // handle left-> 10
     p = p.draw_cuboid(color_han, 4.0,1.0,0.25, origin);
-    node10 = new csX75::HNode(sofa_nodes[8],p);
+    node10 = new csX75::HNode(sofa_nodes[8],p, tex_wood_chair);
     node10->change_parameters(-0.5,-2.0,2.0,90.0,90.0,90.0);
     sofa_nodes.push_back(node10);
 
     // handle right-> 11
     p = p.draw_cuboid(color_han, 4.0,1.0,0.25, origin);
-    node10 = new csX75::HNode(sofa_nodes[9],p);
+    node10 = new csX75::HNode(sofa_nodes[9],p, tex_wood_chair);
     node10->change_parameters(-0.5,2.0,2.0,90.0,90.0,90.0);
     sofa_nodes.push_back(node10);
 }
@@ -393,41 +418,41 @@ void sofa()
 void chair()
 {
     csX75::primitive p;
-    glm::vec4 color_body = glm::vec4(0.5, 0.5, 0.5, 1.0);
+    glm::vec4 color_body = white;
 
     // base -> 0 
     p = p.draw_cuboid(color_body, 5.0,5.0,1.0, origin);
-    node11 = new csX75::HNode(NULL,p);
+    node11 = new csX75::HNode(NULL,p, tex_wood_chair);
     node11->change_parameters(8.8,-5.0,9.0,-90.0,0.0,0.0);
     chair_nodes.push_back(node11);
 
     // leg1 -> 1 
     p = p.draw_cuboid(color_body, 5.0,0.5,0.25, origin);
-    node11 = new csX75::HNode(chair_nodes[0],p);
+    node11 = new csX75::HNode(chair_nodes[0],p, tex_wood_chair);
     node11->change_parameters(-2.0,-1.0,-2.0,0.0,-90.0,0.0);
     chair_nodes.push_back(node11);
 
     // leg2 -> 2 
     p = p.draw_cuboid(color_body, 5.0,0.5,0.25, origin);
-    node11 = new csX75::HNode(chair_nodes[0],p);
+    node11 = new csX75::HNode(chair_nodes[0],p, tex_wood_chair);
     node11->change_parameters(-2.0,1.0,-2.0,0.0,-90.0,0.0);
     chair_nodes.push_back(node11);  
 
     // leg3 -> 3 
     p = p.draw_cuboid(color_body, 5.0,0.5,0.25, origin);
-    node11 = new csX75::HNode(chair_nodes[0],p);
+    node11 = new csX75::HNode(chair_nodes[0],p, tex_wood_chair);
     node11->change_parameters(2.0,-1.0,-2.0,0.0,-90.0,0.0);
     chair_nodes.push_back(node11);
 
     // leg4 -> 4 
     p = p.draw_cuboid(color_body, 5.0,0.5,0.25, origin);
-    node11 = new csX75::HNode(chair_nodes[0],p);
+    node11 = new csX75::HNode(chair_nodes[0],p, tex_wood_chair);
     node11->change_parameters(2.0,1.0,-2.0,0.0,-90.0,0.0);
     chair_nodes.push_back(node11);
 
     // back support -> 5
     p = p.draw_window(color_body, 5.0,5.0,1.0, origin);
-    node11 = new csX75::HNode(chair_nodes[0],p);
+    node11 = new csX75::HNode(chair_nodes[0],p, tex_wood_chair);
     node11->change_parameters(2.0,0.0,3.0,0.0,90.0,90.0);
     chair_nodes.push_back(node11);
 }
@@ -436,19 +461,19 @@ void chair()
 void box()
 {
     csX75::primitive p;
-    glm::vec4 color_out = glm::vec4(0.0, 0.0, 0.8, 1.0);
-    glm::vec4 color_in = glm::vec4(0.8, 0.0, 0.0, 1.0);
-    glm::vec4 color_lid = glm::vec4(0.0, 0.8, 0.0, 1.0);
+    glm::vec4 color_out = white;
+    glm::vec4 color_in = white;
+    glm::vec4 color_lid = white;
 
     // box -> 0
     p = p.draw_cuboid_oc(color_out, color_in, 5.0, 2.0, 3.0, origin);
-    node1 = new csX75::HNode(NULL,p); 
+    node1 = new csX75::HNode(NULL,p, tex_box); 
     node1->change_parameters(0.0,-4.0,0.0,0.0,180.0,0.0);
     box_nodes.push_back(node1);
 
     // lid -> 1
     p = p.draw_plane_ex(color_lid, 5.0, 2.0, 3.0, glm::vec4(0,0,-1.5,0));
-    node1 = new csX75::HNode(box_nodes[0],p); 
+    node1 = new csX75::HNode(box_nodes[0],p, tex_box); 
     node1->change_parameters(0.0,1.0,-1.5,0.0,0.0,0.0);
     box_nodes.push_back(node1);
 
@@ -466,124 +491,125 @@ void perry()
 
     //body -> 0
     p = p.draw_trapezoid_cuboid(color_body, 3.0, 1.0, 1.0, 1.0, origin);
-    node2 = new csX75::HNode(NULL,p); 
+    node2 = new csX75::HNode(NULL,p,tex_light); 
     node2->change_parameters(-2.0,1.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //left thigh -> 1
     p = p.draw_cuboid(color_body, 0.4,0.5,1.0, glm::vec4(0,0.25,0,0));
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(-1.3,-3.0,0.0,-100.0,0.0,0.0);
     perry_nodes.push_back(node2); 
 
     //left leg -> 2
     p = p.draw_cuboid(color_body, 0.4,0.5,1.0, origin);
-    node2 = new csX75::HNode(perry_nodes[1],p);
+    node2 = new csX75::HNode(perry_nodes[1],p,tex_light);
     node2->change_parameters(0.0,-0.75,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2); 
 
     //left foot -> 3
     p = p.draw_frustrum(color_aux, 0.4,0.6,0.75, origin);
-    node2 = new csX75::HNode(perry_nodes[2],p);
+    node2 = new csX75::HNode(perry_nodes[2],p,tex_light);
     node2->change_parameters(0.0,0.0,-0.75,90.0,0.0,0.0);
     perry_nodes.push_back(node2); 
 
     //right thigh -> 4
     p = p.draw_cuboid(color_body, 0.4,0.5,1.0, glm::vec4(0,0.25,0,0));
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(1.3,-3.0,0.0,0.0,0.0,20.0);
     perry_nodes.push_back(node2); 
 
     //right leg -> 5
     p = p.draw_cuboid(color_body, 0.4,0.5,1.0, origin);
-    node2 = new csX75::HNode(perry_nodes[4],p);
+    node2 = new csX75::HNode(perry_nodes[4],p,tex_light);
     node2->change_parameters(0.0,-0.75,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2); 
 
     //right foot -> 6
     p = p.draw_frustrum(color_aux, 0.4,0.6,0.75, origin);
-    node2 = new csX75::HNode(perry_nodes[5],p);
+    node2 = new csX75::HNode(perry_nodes[5],p,tex_light);
     node2->change_parameters(0.0,0.0,-0.75,90.0,0.0,0.0);
     perry_nodes.push_back(node2); 
 
     //left upper arm-> 7
     p = p.draw_cuboid(color_body, 0.8,0.4,0.4, glm::vec4(0.4,0,0,0));
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(-1.5,-1.05,0.0,-30.0,0.0,-60.0);
     perry_nodes.push_back(node2);
 
     //left lower arm-> 8
     p = p.draw_cuboid(color_body, 0.8,0.4,0.4, origin);
-    node2 = new csX75::HNode(perry_nodes[7],p);
+    node2 = new csX75::HNode(perry_nodes[7],p,tex_light);
     node2->change_parameters(-0.8,0.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //left hand-> 9
     p = p.draw_cuboid(color_body, 0.5,0.5,0.8, origin);
-    node2 = new csX75::HNode(perry_nodes[8],p);
+    node2 = new csX75::HNode(perry_nodes[8],p,tex_light);
     node2->change_parameters(-0.4,0.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //right upper arm-> 10
     p = p.draw_cuboid(color_body, 0.8,0.4,0.4, glm::vec4(-0.4,0,0,0));
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(1.5,-1.05,0.0,-10.0,-30.0,-30.0);
     perry_nodes.push_back(node2);
 
     //right lower arm-> 11
     p = p.draw_cuboid(color_body, 0.8,0.4,0.4, origin);
-    node2 = new csX75::HNode(perry_nodes[10],p);
+    node2 = new csX75::HNode(perry_nodes[10],p,tex_light);
     node2->change_parameters(0.8,0.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //right hand-> 12
     p = p.draw_cuboid(color_body, 0.5,0.5,0.8, origin);
-    node2 = new csX75::HNode(perry_nodes[11],p);
+    node2 = new csX75::HNode(perry_nodes[11],p,tex_light);
     node2->change_parameters(0.4,0.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //tail-> 13
     p = p.draw_frustrum(color_aux, 0.5,1.0,2.0, glm::vec4(0,0.5,0,0));
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(0.0,-2.5,1.0,-90.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //left eye-> 14
     p = p.draw_trapezium(color_eye, 0.5, 0.5, 0.3, origin);
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(-0.75,-0.35,-0.51,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //left eye ball-> 15
     p = p.draw_trapezium(color_eyeball, 0.2, 0.5, 0.05, origin);
-    node2 = new csX75::HNode(perry_nodes[14],p);
+    node2 = new csX75::HNode(perry_nodes[14],p,tex_light);
     node2->change_parameters(0.0,0.0,-0.15,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //right eye-> 16
     p = p.draw_trapezium(color_eye, 0.5, 0.5, 0.3, origin);
-    node2 = new csX75::HNode(perry_nodes[0],p);
+    node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
     node2->change_parameters(0.75,-0.35,-0.51,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
     //right eye ball-> 17
     p = p.draw_trapezium(color_eyeball, 0.2, 0.5, 0.05, origin);
-    node2 = new csX75::HNode(perry_nodes[16],p);
+    node2 = new csX75::HNode(perry_nodes[16],p,tex_light);
     node2->change_parameters(0.0,0.0,-0.15,0.0,0.0,0.0);
     perry_nodes.push_back(node2);
 
    //nose-> 18
    p = p.draw_trapezium(color_aux, 1.25,1.0,2.0, origin);
-   node2 = new csX75::HNode(perry_nodes[0],p);
+   node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
    node2->change_parameters(0.0,-0.9,-0.51,0.0,0.0,0.0);
    perry_nodes.push_back(node2);
 
    //accessorize perry-> 19
    p = p.draw_hat( color_hat, 3.2, 1.2, 1.2, origin);
-   node2 = new csX75::HNode(perry_nodes[0],p);
+   node2 = new csX75::HNode(perry_nodes[0],p,tex_light);
    node2->change_parameters(0.0,1.0,0.0,0.0,0.0,0.0);
    perry_nodes.push_back(node2);
 }
+
 
 //----------------------------------------------------------------
 
@@ -597,157 +623,157 @@ void phineas()
 
     //hip -> 0
     p = p.draw_cuboid(blue, 2.5,0.5,2.5, origin);
-    node = new csX75::HNode(NULL,p);
+    node = new csX75::HNode(NULL,p,tex_light);
     node->change_parameters(2.0,0.0,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
     
     // left thigh -> 1
     p = p.draw_cuboid(skin, 0.4,1.0,0.4, glm::vec4(0,0.5,0,0));
-    node = new csX75::HNode(phineas_nodes[0],p);
+    node = new csX75::HNode(phineas_nodes[0],p,tex_light);
     node->change_parameters(-0.8,-0.25,0.0,10.0,-20.0,0.0);
     phineas_nodes.push_back(node);
 
     //left leg -> 2
     p = p.draw_cuboid(skin, 0.4,1.6,0.4, glm::vec4(0.0,0.8,0,0));
-    node = new csX75::HNode(phineas_nodes[1],p);
+    node = new csX75::HNode(phineas_nodes[1],p,tex_light);
     node->change_parameters(0.0,-1.0,0.0,-90.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //left foot -> 3
     p = p.draw_cuboid(glm::vec4(0.0, 0.0, 1.0, 1.0), 0.6,0.4,0.8, glm::vec4(0,0.2,0,0));
-    node = new csX75::HNode(phineas_nodes[2],p);
+    node = new csX75::HNode(phineas_nodes[2],p,tex_light);
     node->change_parameters(0.0,-1.6,-0.2,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //right thigh -> 4
     p = p.draw_cuboid(skin, 0.4,1.0,0.4, glm::vec4(0,0.5,0,0));
-    node = new csX75::HNode(phineas_nodes[0],p);
+    node = new csX75::HNode(phineas_nodes[0],p,tex_light);
     node->change_parameters(0.8,-0.25,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //right leg -> 5
     p = p.draw_cuboid(skin, 0.4,1.6,0.4, glm::vec4(0.0,0.8,0,0));
-    node = new csX75::HNode(phineas_nodes[4],p);
+    node = new csX75::HNode(phineas_nodes[4],p,tex_light);
     node->change_parameters(0.0,-1.0,0.0,-40.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //right foot -> 6
     p = p.draw_cuboid(glm::vec4(0.0, 0.0, 1.0, 1.0), 0.6,0.4,0.8, glm::vec4(0,0.2,0,0));
-    node = new csX75::HNode(phineas_nodes[5],p);
+    node = new csX75::HNode(phineas_nodes[5],p,tex_light);
     node->change_parameters(0.0,-1.6,-0.2,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //torso -> 7
     p = p.draw_frustrum(glm::vec4(1.0, 0.4, 0.0, 1.0), 0.5,2.5,3, glm::vec4(0,-1.5,0,0));
-    node = new csX75::HNode(phineas_nodes[0],p);
+    node = new csX75::HNode(phineas_nodes[0],p,tex_light);
     node->change_parameters(0.0,0.25,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //left upper arm-> 8
     p = p.draw_cuboid(skin, 1.6,0.4,0.4, glm::vec4(0.8,0,0,0));
-    node = new csX75::HNode(phineas_nodes[7],p);
+    node = new csX75::HNode(phineas_nodes[7],p,tex_light);
     node->change_parameters(-0.25,3.0,0.0,-60.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //left lower arm-> 9
     p = p.draw_cuboid(skin, 1.6,0.4,0.4, glm::vec4(0.8,0,0,0));
-    node = new csX75::HNode(phineas_nodes[8],p);
+    node = new csX75::HNode(phineas_nodes[8],p,tex_light);
     node->change_parameters(-1.6,0.0,0.0,0.0,50.0,0.0);
     phineas_nodes.push_back(node);
 
     //left hand-> 10
     p = p.draw_cuboid(skin, 1.0,0.6,0.4, glm::vec4(0.5,0,0,0));
-    node = new csX75::HNode(phineas_nodes[9],p);
+    node = new csX75::HNode(phineas_nodes[9],p,tex_light);
     node->change_parameters(-1.6,0.0,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //right upper arm-> 11
     p = p.draw_cuboid(skin, 1.6,0.4,0.4, glm::vec4(-0.8,0,0,0));
-    node = new csX75::HNode(phineas_nodes[7],p);
+    node = new csX75::HNode(phineas_nodes[7],p,tex_light);
     node->change_parameters(0.25,3.0,0.0,50.0,0.0,-30.0);
     phineas_nodes.push_back(node);
 
     //right lower arm-> 12
     p = p.draw_cuboid(skin, 1.6,0.4,0.4, glm::vec4(-0.8,0,0,0));
-    node = new csX75::HNode(phineas_nodes[11],p);
+    node = new csX75::HNode(phineas_nodes[11],p,tex_light);
     node->change_parameters(1.6,0.0,0.0,0.0,0.0,-30.0);
     phineas_nodes.push_back(node);
 
     //right hand-> 13
     p = p.draw_cuboid(skin, 1.0,0.6,0.4, glm::vec4(-0.5,0,0,0));
-    node = new csX75::HNode(phineas_nodes[12],p);
+    node = new csX75::HNode(phineas_nodes[12],p,tex_light);
     node->change_parameters(1.6,0.0,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //neck-> 14
     p = p.draw_cuboid(skin, 0.4,0.4,0.4, glm::vec4(0,-0.2,0,0));
-    node = new csX75::HNode(phineas_nodes[7],p);
+    node = new csX75::HNode(phineas_nodes[7],p,tex_light);
     node->change_parameters(0.0,3.0,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //head-> 15
     p = p.draw_face(skin, 3.0, glm::vec4(0,-3,0,0));
-    node = new csX75::HNode(phineas_nodes[14],p);
+    node = new csX75::HNode(phineas_nodes[14],p,tex_light);
     node->change_parameters(0.0,0.4,0.0,0.0,60.0,0.0);
     phineas_nodes.push_back(node);
 
     //sunglasses mid rim -> 16
     p = p.draw_cuboid(yellow, 0.6, 0.2, 0.2, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(2.0,4.0,0.0,0.0,90.0,0.0);
     phineas_nodes.push_back(node);
 
     //sunglasses left glass -> 17
     p = p.draw_cuboid(blue, 1.0, 1.0, 0.2, origin);
-    node = new csX75::HNode(phineas_nodes[16],p); 
+    node = new csX75::HNode(phineas_nodes[16],p,tex_light); 
     node->change_parameters(-0.8,-0.4,0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //sunglasses right glass -> 18
     p = p.draw_cuboid(blue, 1.0, 1.0, 0.2, origin);
-    node = new csX75::HNode(phineas_nodes[16],p); 
+    node = new csX75::HNode(phineas_nodes[16],p,tex_light); 
     node->change_parameters(0.8,-0.4,0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //sunglasses left rim -> 19
     p = p.draw_cuboid(yellow, 2.0, 0.2, 0.2, glm::vec4(-1.0,0,0,0));
-    node = new csX75::HNode(phineas_nodes[17],p); 
+    node = new csX75::HNode(phineas_nodes[17],p,tex_light); 
     node->change_parameters(-0.5,0.4,0,-30.0,60.0,0.0);
     phineas_nodes.push_back(node);
 
     //sunglasses right rim -> 20
     p = p.draw_cuboid(yellow, 2.0, 0.2, 0.2, glm::vec4(1.0,0,0,0));
-    node = new csX75::HNode(phineas_nodes[18],p); 
+    node = new csX75::HNode(phineas_nodes[18],p,tex_light); 
     node->change_parameters(0.5,0.4,0,-30.0,-60.0,0.0);
     phineas_nodes.push_back(node);
 
     //hair 1 -> 21
     p = p.draw_prism(red, 0.6, 1.5, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(-1.4,4.4,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
 
     //hair 2 -> 22
     p = p.draw_prism(red, 0.9, 1.5, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(-1.4,4.4,0.0,30.0,30.0,30.0);
     phineas_nodes.push_back(node);
 
     //hair 3 -> 23
     p = p.draw_prism(red, 0.6, 1.5, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(-1.4,4.4,0.0,0.0,-30.0,60.0);
     phineas_nodes.push_back(node);
 
      //hair 4 -> 24
     p = p.draw_prism(red, 0.9, 1.5, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(-1.4,4.4,0.0,-30.0,-30.0,-30.0);
     phineas_nodes.push_back(node);
 
     //hair 5 -> 25
     p = p.draw_prism(red, 0.6, 1.5, origin);
-    node = new csX75::HNode(phineas_nodes[15],p); 
+    node = new csX75::HNode(phineas_nodes[15],p,tex_light); 
     node->change_parameters(-1.4,4.4,0.0,0.0,30.0,-60.0);
     phineas_nodes.push_back(node);
 }
@@ -756,30 +782,43 @@ void phineas()
 
 void initBuffersGL(void)
 {
+  // Load Textures 
+  tex_glass=LoadTexture("textures/glass.bmp",2732,2732);
+  tex_ceil=LoadTexture("textures/ceil.bmp",800,548);
+  tex_floor=LoadTexture("textures/floor.bmp",800,800);
+  tex_pat=LoadTexture("textures/lamp_pat.bmp",294,171);
+  tex_sofa=LoadTexture("textures/sofa.bmp",1280,617);
+  tex_wall=LoadTexture("textures/wall.bmp",1024,680);
+  tex_wood=LoadTexture("textures/wood.bmp",224,224);
+  tex_wood_chair=LoadTexture("textures/wood_chair.bmp",500,375);
+  tex_st=LoadTexture("textures/lamp_stand.bmp",251,201);
+  tex_box=LoadTexture("textures/box.bmp",768,1024);
+  tex_light=LoadTexture("textures/light.bmp",390,280);
 
   // Load shaders and use the resulting shader program
-  std::string vertex_shader_file("vshader.glsl");
-  std::string fragment_shader_file("fshader.glsl");
+  std::string vertex_shader_file1("vshader1.glsl");
+  std::string fragment_shader_file1("fshader1.glsl");
 
-  std::vector<GLuint> shaderList;
-  shaderList.push_back(csX75::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
-  shaderList.push_back(csX75::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
+  std::vector<GLuint> shaderList1;
+  shaderList1.push_back(csX75::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file1));
+  shaderList1.push_back(csX75::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file1));
 // 
-  shaderProgram = csX75::CreateProgramGL(shaderList);
-  glUseProgram( shaderProgram );
+  shaderProgram1 = csX75::CreateProgramGL(shaderList1);
+  glUseProgram( shaderProgram1 );
 
   // getting the attributes from the shader program
-  vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
-  vColor = glGetAttribLocation( shaderProgram, "vColor" ); 
-  vNormal = glGetAttribLocation( shaderProgram, "vNormal" );
-  uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
-  normalMatrix =  glGetUniformLocation( shaderProgram, "normalMatrix");
-  viewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
-  Light = glGetUniformLocation( shaderProgram, "Light");
+  vPosition = glGetAttribLocation( shaderProgram1, "vPosition" );
+  vColor = glGetAttribLocation( shaderProgram1, "vColor" ); 
+  vNormal = glGetAttribLocation( shaderProgram1, "vNormal" );
+  vTexture = glGetAttribLocation( shaderProgram1, "vTexture" );
+  uModelViewMatrix = glGetUniformLocation( shaderProgram1, "uModelViewMatrix");
+  normalMatrix =  glGetUniformLocation( shaderProgram1, "normalMatrix");
+  viewMatrix = glGetUniformLocation( shaderProgram1, "viewMatrix");
+  Light = glGetUniformLocation( shaderProgram1, "Light");
 
   csX75::primitive p;
   p = p.draw_cuboid(glm::vec4(0.0, 0.0, 0.0, 0.0), 100.0,100.0,100.0, origin);
-  node3 = new csX75::HNode(NULL,p);
+  node3 = new csX75::HNode(NULL,p, tex_wood_chair);
   node3->change_parameters(0.0,0.0,0.0,0.0,0.0,0.0);
   scene_nodes.push_back(node3);
   
@@ -862,7 +901,7 @@ void renderGL(void)
 	    //Creating the lookat matrix
 	    lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
 
-	    view_matrix = projection_matrix*lookat_matrix;
+	    view_matrix = projection_matrix*lookat_matrix*model_matrix;
 	    matrixStack.push_back(view_matrix);
 
 	    room_nodes[0]->render_tree();

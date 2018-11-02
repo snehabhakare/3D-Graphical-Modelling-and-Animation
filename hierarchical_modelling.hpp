@@ -31,7 +31,7 @@ bool enable_culling=true;
 //Running variable to toggle wireframe/solid modelling
 bool solid=true;
 //Shader program attribs
-GLuint vPosition,vColor,vNormal;
+GLuint vPosition,vColor,vNormal,vTexture;
 int light=0;
 bool mode=true;
 //global matrix stack for hierarchical modelling

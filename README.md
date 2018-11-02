@@ -4,7 +4,7 @@
 Sneha Bhakare - 150050040, Sukanya Bhattacharjee - 174050012
 
 ## Disclaimer
-The code in the repository is completely our work and not copied from any where. The tutorial 7 code used as the basecode.
+The code in the repository is completely our work and not copied from any where. The tutorials 5,6 and 7 codes are used as the basecode.
 
 ## Key Controls
 
@@ -12,6 +12,7 @@ The code in the repository is completely our work and not copied from any where.
 2. I/i 
 - switch from inspection(global rotation about object's centroid) to individual(individual model rotation) mode and vice versa
 - to get back the objects in view frustrum in case they go out of view after certain transformations
+3. G/g - cycle between Light 1, Light 2, or both being on/off
 
 Global Rotation Mode: All the 3 models are selected
 

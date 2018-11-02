@@ -21,10 +21,11 @@ namespace csX75
 		std::vector<glm::vec4> points;
 		std::vector<glm::vec4> color;
 		std::vector<glm::vec4> normal;
+		std::vector<glm::vec2> texture;
 		glm::vec4 origin;
 		int num_vertices;
 		
-		void quad(glm::vec4*,glm::vec4, int, int, int, int);
+		void quad(glm::vec4*, glm::vec4, glm::vec2*, int, int, int, int);
 		primitive draw_cuboid(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_frustrum(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_prism(glm::vec4, double, double, glm::vec4);
@@ -33,6 +34,7 @@ namespace csX75
 		primitive draw_plane_ex(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_trapezoid_cuboid(glm::vec4, double, double, double, double, glm::vec4);
 		primitive draw_trapezium(glm::vec4, double, double, double, glm::vec4);
+		primitive draw_trapezium_op(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_hat(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_window(glm::vec4, double, double, double, glm::vec4);
 	};

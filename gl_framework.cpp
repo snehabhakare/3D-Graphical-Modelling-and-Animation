@@ -103,7 +103,7 @@ namespace csX75
 		{
 			GLfloat *p = curr_node->get_parameters(); //p={tx,ty,tz,rx,ry,rz}
 			// restrict the box lid's rotation to x-direction only
-			if(curr_node == box_nodes[0] || curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
+			if(curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
 				curr_node->dec_rx();
 			// restrict the box lid's rotation by maximum possible angle of rotation
 			else if( curr_node == box_nodes[1] && p[3] >= - 225)	
@@ -126,7 +126,7 @@ namespace csX75
 		{
 			GLfloat *p = curr_node->get_parameters(); //p={tx,ty,tz,rx,ry,rz}
 			// restrict the box lid's rotation to x-direction only
-			if(curr_node == box_nodes[0] || curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
+			if(curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
 				curr_node->inc_rx();
 			// restrict the box lid's rotation by maximum possible angle of rotation
 			else if( curr_node == box_nodes[1] && p[3] < 0)	
@@ -150,7 +150,7 @@ namespace csX75
 		{
 			GLfloat *p = curr_node->get_parameters(); //p={tx,ty,tz,rx,ry,rz}
 			// restrict the box lid's rotation to x-direction only
-			if(curr_node == box_nodes[0] || curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
+			if(curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
 				curr_node->dec_rz();
 			// restrict the perry's rotation by maximum possible angle of rotation
 			else if( (curr_node == perry_nodes[1] || curr_node == perry_nodes[4]) && p[5] >= -20)   //leg movement
@@ -171,7 +171,7 @@ namespace csX75
 		{
 			GLfloat *p = curr_node->get_parameters(); //p={tx,ty,tz,rx,ry,rz}
 			// restrict the box lid's rotation to x-direction only
-			if(curr_node == box_nodes[0] || curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
+			if(curr_node == perry_nodes[0] || curr_node == phineas_nodes[0])
 				curr_node->inc_rz();
 			// restrict the perry's rotation by maximum possible angle of rotation
 			else if( (curr_node == perry_nodes[1] || curr_node == perry_nodes[4]) && p[5] < 20)   //leg movement
@@ -227,15 +227,7 @@ namespace csX75
 			if(mode == false)
 			{
 				std::cout<<"Individual rotation mode"<<std::endl;
-				/*c_xpos = 0.0;
-				c_ypos = 0.0;
-				c_zpos = 100.0;
-				c_up_x = 0.0;
-				c_up_y = 1.0;
-				c_up_z = 0.0;
-				c_xrot = 0.0;
-				c_yrot = 0.0;
-				c_zrot = 0.0;*/
+
 				curr_node = scene_nodes[0];
 				op=false;
 				ch=0;
@@ -358,7 +350,7 @@ namespace csX75
 
     else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==1)
 		//select boxes' lid
-		curr_node = box_nodes[1];
+    {		curr_node = box_nodes[1];std::cout<<"Lid selected"<<std::endl;}
     else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==2)
 		//select phineas's left thigh
 		curr_node = phineas_nodes[1];
