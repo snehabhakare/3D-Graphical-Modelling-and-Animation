@@ -37,6 +37,8 @@ namespace csX75
 		primitive draw_trapezium_op(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_hat(glm::vec4, double, double, double, glm::vec4);
 		primitive draw_window(glm::vec4, double, double, double, glm::vec4);
+		primitive draw_door_wall(glm::vec4, double, double, double, glm::vec4);
+		primitive draw_window_wall(glm::vec4, double, double, double, glm::vec4);
 	};
 };
 

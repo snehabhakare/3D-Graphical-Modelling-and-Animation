@@ -69,7 +69,7 @@ namespace csX75
 					 ((curr_node == phineas_nodes[15]) && p[4] > -180))	//head movement
 				curr_node->dec_ry();
 			// restrict the room door's rotation to y-direction only
-			else if( curr_node == room_nodes[10] && p[4] > -90)
+			else if( curr_node == room_nodes[7] && p[4] > -90)
 				curr_node->dec_ry();
 		}
 	    else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS && !mode)
@@ -95,7 +95,7 @@ namespace csX75
 					 ((curr_node == phineas_nodes[15]) && p[4] < 0))	//head movement
 				curr_node->inc_ry();
 			// restrict the room door's rotation to y-direction only
-			else if( curr_node == room_nodes[10] && p[4] < 0)
+			else if( curr_node == room_nodes[7] && p[4] < 0)
 				curr_node->inc_ry();
 	    }
     
@@ -332,7 +332,7 @@ namespace csX75
     }
     else if (key == GLFW_KEY_V && action == GLFW_PRESS && (!op || (op && ch!=4)) && !mode)
     {	//select room's door
-		curr_node = room_nodes[10];
+		curr_node = room_nodes[7];
 		std::cout<<"Room Door selected"<<std::endl;
 		ch=4;
 		op=true;

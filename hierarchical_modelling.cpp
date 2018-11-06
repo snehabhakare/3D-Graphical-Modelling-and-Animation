@@ -19,7 +19,7 @@ glm::vec4 origin = glm::vec4(0.0);
 glm::vec4 white = glm::vec4(1.0);
 
   // Load Textures 
-GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wood, tex_wood_chair, tex_st, tex_box,tex_light;
+GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box,tex_light;
 
 //----------------------------------------------------------------
 void room()
@@ -34,68 +34,62 @@ void room()
     node4 = new csX75::HNode(NULL,p, tex_floor);
     node4->change_parameters(0.0,-10.0,0.0,90.0,0.0,0.0);
     room_nodes.push_back(node4);
-    
-    // left wall -> 1
-    /*p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
-    node4->change_parameters(-12.0,0.0,-12.0,0.0,-90.0,0.0);
-    room_nodes.push_back(node4);
 
-    // right wall -> 2 
-    p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
-    node4->change_parameters(12.0,0.0,-12.0,0.0,-90.0,0.0);
-    room_nodes.push_back(node4);
-
-    // back wall(left fourth) -> 3
+    // back wall(left fourth) -> 1
     p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
     node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
     node4->change_parameters(-8.5,12.0,-12.0,-90.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // back wall(top fourth) -> 4
+    // back wall(top fourth) -> 2
     p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p, tex_wall);
-    node4->change_parameters(8.5,8.75,0.0,0.0,0.0,0.0);
+    node4 = new csX75::HNode(room_nodes[1],p, tex_wall);
+    node4->change_parameters(8.25,8.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // back wall(right fourth) -> 5
+    // back wall(right fourth) -> 3
     p = p.draw_cuboid(color_wall, 6.5,23.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[4],p, tex_wall);
+    node4 = new csX75::HNode(room_nodes[2],p, tex_wall);
     node4->change_parameters(9.35,-9.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // back wall(bottom fourth) -> 6 
+    // back wall(bottom fourth) -> 4
     p = p.draw_cuboid(color_wall, 23.0,6.0,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p, tex_wall);
+    node4 = new csX75::HNode(room_nodes[1],p, tex_wall);
     node4->change_parameters(8.5,-8.75,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // window -> 7
+    // window -> 5
     p = p.draw_window(color_window, 12.5,11.5,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[3],p, tex_glass);
+    node4 = new csX75::HNode(room_nodes[1],p, tex_glass);
     node4->change_parameters(8.5,0.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // front wall(left half) -> 8
-    p = p.draw_cuboid(color_wall, 12.5,23.0,1.0, origin);
+    // front wall -> 6
+    p = p.draw_door_wall(color_wall, 25.0,23.0,1.0, origin);
     node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
-    node4->change_parameters(-5.25,-12.0,-12.0,-90.0,0.0,0.0);
+    node4->change_parameters(0.0,-12.0,-12.0,-90.0,0.0,0.0);
     room_nodes.push_back(node4);
 
-    // front wall(right top half) -> 9
-    p = p.draw_cuboid(color_wall, 11.5,11.5,1.0, origin);
-    node4 = new csX75::HNode(room_nodes[8],p, tex_wall);
-    node4->change_parameters(12.0,5.75,0.0,0.0,0.0,0.0);
+    // door -> 7
+    p = p.draw_cuboid(color_door, 17.5,11.5,1.0, glm::vec4(0,0,0,0));// fix rotation
+    node4 = new csX75::HNode(room_nodes[6],p, tex_wood);
+    node4->change_parameters(5.75,-2.9,0.0,0.0,0.0,90.0);
     room_nodes.push_back(node4);
 
-    // door -> 10
-    p = p.draw_cuboid(color_door, 11.5,11.5,1.0, glm::vec4(0,0,0,0));// fix rotation
-    node4 = new csX75::HNode(room_nodes[8],p, tex_wood);
-    node4->change_parameters(12.0,-5.75,0.0,0.0,0.0,0.0);
-    room_nodes.push_back(node4);*/
+   // left wall -> 8
+    p = p.draw_cuboid(color_wall, 23.0,23.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
+    node4->change_parameters(-12.0,0.0,-12.0,0.0,-90.0,0.0);
+    room_nodes.push_back(node4);
 
-    // ceiling -> 11
+    // right wall -> 9
+    p = p.draw_cuboid(color_wall, 23.0,25.0,1.0, origin);
+    node4 = new csX75::HNode(room_nodes[0],p, tex_wall);
+    node4->change_parameters(12.0,0.0,-12.0,0.0,-90.0,0.0);
+    room_nodes.push_back(node4);
+   
+    // ceiling -> 10
     /*p = p.draw_cuboid(color_wall, 25.0,25.0,1.0, origin);
     node4 = new csX75::HNode(room_nodes[0],p, tex_ceil);
     node4->change_parameters(0.0,0.0,-23.5,0.0,0.0,0.0);

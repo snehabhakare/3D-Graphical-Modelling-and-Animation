@@ -424,4 +424,50 @@ namespace csX75
 
     		return *this;
 	}
+
+	primitive primitive::draw_door_wall(glm::vec4 clr, double x, double y, double z, glm::vec4 o)
+	{
+		num_vertices = 0;
+		points.clear();
+		color.clear();
+		normal.clear();
+		texture.clear();
+		origin = o;
+		glm::vec4 positions[14] = {
+			glm::vec4(-x/2, -y/2,  z/2, 1.0) - o,
+			glm::vec4(-x/2,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/2,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/2,  y/4,  z/2, 1.0) - o,
+			glm::vec4(-x/2, -y/2, -z/2, 1.0) - o,
+			glm::vec4(-x/2,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/2,  y/2, -z/2, 1.0) - o,
+			glm::vec4( x/2,  y/4, -z/2, 1.0) - o,
+			glm::vec4( 0.0,  y/4,  z/2, 1.0) - o,
+			glm::vec4( 0.0,  y/4, -z/2, 1.0) - o,
+			glm::vec4( 0.0, -y/2,  z/2, 1.0) - o,
+			glm::vec4( 0.0, -y/2, -z/2, 1.0) - o,
+			glm::vec4( 0.0,  y/2,  z/2, 1.0) - o,
+			glm::vec4( 0.0,  y/2, -z/2, 1.0) - o
+		};
+
+		glm::vec2 t[4] = {
+		glm::vec2( 0.0, 0.0),
+		glm::vec2( 0.0, 1.0),
+		glm::vec2( 1.0, 0.0),
+		glm::vec2( 1.0, 1.0)
+		};
+
+		quad(positions, clr, t, 1, 0, 10, 12);
+		quad(positions, clr, t, 2, 3, 7, 6);
+		quad(positions, clr, t, 6, 5, 1, 2);
+		quad(positions, clr, t, 4, 5, 13, 11);
+		quad(positions, clr, t, 5, 4, 0, 1);
+		quad(positions, clr, t, 7, 9, 8, 3);
+		quad(positions, clr, t, 9, 11, 10, 8);
+		quad(positions, clr, t, 13, 9, 8, 12);
+		quad(positions, clr, t, 12, 2, 3, 8);
+		quad(positions, clr, t, 13, 6, 7, 9);
+
+		return *this;
+	}
 }
