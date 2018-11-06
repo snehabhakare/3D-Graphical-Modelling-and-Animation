@@ -1,10 +1,11 @@
 #include "gl_framework.hpp"
 #include "hierarchy_node.hpp"
 
-extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot;
+extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot,c_xpos,c_ypos,c_zpos;
 extern bool enable_perspective;
 extern int light;
-extern csX75::HNode* node1, *node2, *node3,*curr_node, *node3, *node4, *node5;
+extern csX75::HNode* curr_node;
+extern std::vector<glm::vec4> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes;
 int ch =0;
 bool op=false;
@@ -44,7 +45,20 @@ namespace csX75
 		//!Close the window if the ESC key was pressed
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GL_TRUE);
+
+		else if (key == GLFW_KEY_P && action == GLFW_PRESS)
+		{
+			enable_perspective = !enable_perspective; 
+		}
     
+    	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
+    	{
+    		if(!control_points.empty()){
+    			glm::vec4 v = control_points.back();
+    			std::cout << "Deleted Point: " << v.x << ", " << v.y << ", " << v.z << std::endl;
+    			control_points.pop_back();
+    		}
+    	}
     
 	    else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS && !mode)
 	    {
@@ -236,195 +250,247 @@ namespace csX75
 				std::cout<<"Global rotation mode"<<std::endl;
 		}
     
-    else if (key == GLFW_KEY_G && action == GLFW_PRESS)
-    {
-	if(light==0)
+	    else if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	    {
+			if(light==0)
+			{
+				std::cout<<"Light 1 On"<<std::endl;
+				light=1;
+			}
+			else if(light==1)
+			{
+				std::cout<<"Light 2 On"<<std::endl;
+				light=2;
+			}
+			else if(light==2)
+			{
+				std::cout<<"Lights 1 and 2 On"<<std::endl;
+				light=3;
+			}
+			else
+			{
+				std::cout<<"Lights 1 and 2 Off"<<std::endl;
+				light=0;
+			}
+	    }
+
+	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		xrot+=10;
+				// glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];	
+	    	}
+	    	else{
+	    		c_xpos++;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+			
+	    }
+	    else if (key == GLFW_KEY_D && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		xrot-=10;
+				// glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];
+	    	}
+	    	else{
+	    		c_xpos--;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+	    }
+	    else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		yrot+=10;
+				// glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];
+	    	}
+	    	else{
+	    		c_ypos++;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+	    }
+	    else if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		yrot-=10;
+				// glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];	
+	    	}
+	    	else{
+	    		c_ypos--;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+	    }
+	    else if (key == GLFW_KEY_S && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		zrot+=10;
+				glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];	
+	    	}
+	    	else{
+	    		c_zpos++;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+	    }
+	    else if (key == GLFW_KEY_X && action == GLFW_PRESS)
+	    {
+	    	if(mode){
+	    		zrot-=10;
+				// glm::vec4 c = curr_node->get_centroid();
+				// xpos = c[0];
+				// ypos = c[1];
+				// zpos = c[2];	
+	    	}
+	    	else{
+	    		c_zpos--;
+	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
+	    	}
+	    }
+
+	    else if (key == GLFW_KEY_B && action == GLFW_PRESS && (!op || (op && ch!=1)) && !mode)
+	    {	//select box
+			curr_node = box_nodes[0];
+			std::cout<<"Box selected"<<std::endl;
+			ch=1;
+			op=true;
+	    }
+	    else if (key == GLFW_KEY_N && action == GLFW_PRESS && (!op || (op && ch!=2)) && !mode)
+	    {	//select phineas
+			curr_node = phineas_nodes[0];
+			std::cout<<"Phineas selected"<<std::endl;
+			ch=2;
+			op=true;
+	    }
+	    else if (key == GLFW_KEY_M && action == GLFW_PRESS && (!op || (op && ch!=3)) && !mode)
+	    {	//select perry
+			curr_node = perry_nodes[0];
+			std::cout<<"Perry selected"<<std::endl;
+			ch=3;
+			op=true;
+	    }
+	    else if (key == GLFW_KEY_V && action == GLFW_PRESS && (!op || (op && ch!=4)) && !mode)
+	    {	//select room's door
+			curr_node = room_nodes[7];
+			std::cout<<"Room Door selected"<<std::endl;
+			ch=4;
+			op=true;
+	    }
+
+	    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==1)
+			//select boxes' body
+			curr_node = box_nodes[0];
+	    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==2)
+			//select phineas's hip
+			curr_node = phineas_nodes[0];
+	    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==3)
+			//select perry's body
+			curr_node = perry_nodes[0];
+
+	    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==1)
+			//select boxes' lid
+	    {		curr_node = box_nodes[1];std::cout<<"Lid selected"<<std::endl;}
+	    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==2)
+			//select phineas's left thigh
+			curr_node = phineas_nodes[1];
+	    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==3)
+			//select perry's left thigh
+			curr_node = perry_nodes[1];
+
+	    else if (key == GLFW_KEY_2 && action == GLFW_PRESS && ch==2)
+			//select phineas's left leg
+			curr_node = phineas_nodes[2];
+	   	else if (key == GLFW_KEY_2 && action == GLFW_PRESS && ch==3)
+			//select perry's right thigh
+			curr_node = perry_nodes[4];
+
+	    else if (key == GLFW_KEY_3 && action == GLFW_PRESS && ch==2)
+			//select phineas's left foot
+			curr_node = phineas_nodes[3];
+	    else if (key == GLFW_KEY_3 && action == GLFW_PRESS && ch==3)
+			//select perry's left upper arm
+			curr_node = perry_nodes[7];
+
+	    else if (key == GLFW_KEY_4 && action == GLFW_PRESS && ch==2)
+			//select phineas's right thigh
+			curr_node = phineas_nodes[4];
+	    else if (key == GLFW_KEY_4 && action == GLFW_PRESS && ch==3)
+			//select perry's right upper arm
+			curr_node = perry_nodes[10];
+
+	    else if (key == GLFW_KEY_5 && action == GLFW_PRESS && ch==2)
+			//select phineas's right leg
+			curr_node = phineas_nodes[5];
+	    else if (key == GLFW_KEY_5 && action == GLFW_PRESS && ch==3)
+			//select perry's tail
+			curr_node = perry_nodes[13];
+
+	    else if (key == GLFW_KEY_6 && action == GLFW_PRESS && ch==2)
+			//select phineas's right foot
+			curr_node = phineas_nodes[6];
+
+	    else if (key == GLFW_KEY_7 && action == GLFW_PRESS && ch==2)
+			//select phineas's torso
+			curr_node = phineas_nodes[7];
+
+	    else if (key == GLFW_KEY_8 && action == GLFW_PRESS && ch==2)
+			//select phineas's left upper arm
+			curr_node = phineas_nodes[8];
+
+	    else if (key == GLFW_KEY_9 && action == GLFW_PRESS && ch==2)
+			//select phineas's left lower arm
+			curr_node = phineas_nodes[9];
+
+	    else if (key == GLFW_KEY_Q && action == GLFW_PRESS && ch==3)
+			//select phineas's left hand
+			curr_node = phineas_nodes[10];
+
+	    else if (key == GLFW_KEY_W && action == GLFW_PRESS && ch==2)
+			//select phineas's right upper arm
+			curr_node = phineas_nodes[11];
+
+	    else if (key == GLFW_KEY_E && action == GLFW_PRESS && ch==2)
+			//select phineas's right lower arm
+			curr_node = phineas_nodes[12];
+
+	    else if (key == GLFW_KEY_R && action == GLFW_PRESS && ch==2)
+			//select phineas's right hand
+			curr_node = phineas_nodes[13];
+
+	    else if (key == GLFW_KEY_T && action == GLFW_PRESS && ch==2)
+			//select phineas's neck 
+			curr_node = phineas_nodes[14];
+
+	    else if (key == GLFW_KEY_Y && action == GLFW_PRESS && ch==2)
+			//select phineas's head
+			curr_node = phineas_nodes[15];
+    }
+
+    void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	{
-		std::cout<<"Light 1 On"<<std::endl;
-		light=1;
+		double xpos, ypos;
+		double x=c_xpos, y=c_ypos, z=c_zpos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+			ypos = 768 - ypos;
+			x += xpos/24 - 16;
+			y += ypos/24 - 16;
+			z -= 10;
+			std::cout << xpos << " " << ypos << std::endl;
+			control_points.push_back(glm::vec4(x,y,z,1.0));
+			std::cout << "Selected Point: " << x << ", " << y << ", " << z << std::endl;
+		}
 	}
-	else if(light==1)
-	{
-		std::cout<<"Light 2 On"<<std::endl;
-		light=2;
-	}
-	else if(light==2)
-	{
-		std::cout<<"Lights 1 and 2 On"<<std::endl;
-		light=3;
-	}
-	else
-	{
-		std::cout<<"Lights 1 and 2 Off"<<std::endl;
-		light=0;
-	}
-    }
-
-    else if (key == GLFW_KEY_A && action == GLFW_PRESS && mode)
-    {
-	xrot+=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-    else if (key == GLFW_KEY_D && action == GLFW_PRESS && mode)
-    {
-	xrot-=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-    else if (key == GLFW_KEY_Z && action == GLFW_PRESS && mode)
-    {
-	yrot+=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-    else if (key == GLFW_KEY_C && action == GLFW_PRESS && mode)
-    {
-	yrot-=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-    else if (key == GLFW_KEY_S && action == GLFW_PRESS && mode)
-    {
-	zrot+=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-    else if (key == GLFW_KEY_X && action == GLFW_PRESS && mode)
-    {
-	zrot-=10;
-	glm::vec4 c = curr_node->get_centroid();
-	xpos = c[0];
-	ypos = c[1];
-	zpos = c[2];
-    }
-
-    else if (key == GLFW_KEY_B && action == GLFW_PRESS && (!op || (op && ch!=1)) && !mode)
-    {	//select box
-		curr_node = box_nodes[0];
-		std::cout<<"Box selected"<<std::endl;
-		ch=1;
-		op=true;
-    }
-    else if (key == GLFW_KEY_N && action == GLFW_PRESS && (!op || (op && ch!=2)) && !mode)
-    {	//select phineas
-		curr_node = phineas_nodes[0];
-		std::cout<<"Phineas selected"<<std::endl;
-		ch=2;
-		op=true;
-    }
-    else if (key == GLFW_KEY_M && action == GLFW_PRESS && (!op || (op && ch!=3)) && !mode)
-    {	//select perry
-		curr_node = perry_nodes[0];
-		std::cout<<"Perry selected"<<std::endl;
-		ch=3;
-		op=true;
-    }
-    else if (key == GLFW_KEY_V && action == GLFW_PRESS && (!op || (op && ch!=4)) && !mode)
-    {	//select room's door
-		curr_node = room_nodes[7];
-		std::cout<<"Room Door selected"<<std::endl;
-		ch=4;
-		op=true;
-    }
-
-    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==1)
-		//select boxes' body
-		curr_node = box_nodes[0];
-    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==2)
-		//select phineas's hip
-		curr_node = phineas_nodes[0];
-    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==3)
-		//select perry's body
-		curr_node = perry_nodes[0];
-
-    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==1)
-		//select boxes' lid
-    {		curr_node = box_nodes[1];std::cout<<"Lid selected"<<std::endl;}
-    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==2)
-		//select phineas's left thigh
-		curr_node = phineas_nodes[1];
-    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==3)
-		//select perry's left thigh
-		curr_node = perry_nodes[1];
-
-    else if (key == GLFW_KEY_2 && action == GLFW_PRESS && ch==2)
-		//select phineas's left leg
-		curr_node = phineas_nodes[2];
-   	else if (key == GLFW_KEY_2 && action == GLFW_PRESS && ch==3)
-		//select perry's right thigh
-		curr_node = perry_nodes[4];
-
-    else if (key == GLFW_KEY_3 && action == GLFW_PRESS && ch==2)
-		//select phineas's left foot
-		curr_node = phineas_nodes[3];
-    else if (key == GLFW_KEY_3 && action == GLFW_PRESS && ch==3)
-		//select perry's left upper arm
-		curr_node = perry_nodes[7];
-
-    else if (key == GLFW_KEY_4 && action == GLFW_PRESS && ch==2)
-		//select phineas's right thigh
-		curr_node = phineas_nodes[4];
-    else if (key == GLFW_KEY_4 && action == GLFW_PRESS && ch==3)
-		//select perry's right upper arm
-		curr_node = perry_nodes[10];
-
-    else if (key == GLFW_KEY_5 && action == GLFW_PRESS && ch==2)
-		//select phineas's right leg
-		curr_node = phineas_nodes[5];
-    else if (key == GLFW_KEY_5 && action == GLFW_PRESS && ch==3)
-		//select perry's tail
-		curr_node = perry_nodes[13];
-
-    else if (key == GLFW_KEY_6 && action == GLFW_PRESS && ch==2)
-		//select phineas's right foot
-		curr_node = phineas_nodes[6];
-
-    else if (key == GLFW_KEY_7 && action == GLFW_PRESS && ch==2)
-		//select phineas's torso
-		curr_node = phineas_nodes[7];
-
-    else if (key == GLFW_KEY_8 && action == GLFW_PRESS && ch==2)
-		//select phineas's left upper arm
-		curr_node = phineas_nodes[8];
-
-    else if (key == GLFW_KEY_9 && action == GLFW_PRESS && ch==2)
-		//select phineas's left lower arm
-		curr_node = phineas_nodes[9];
-
-    else if (key == GLFW_KEY_Q && action == GLFW_PRESS && ch==3)
-		//select phineas's left hand
-		curr_node = phineas_nodes[10];
-
-    else if (key == GLFW_KEY_W && action == GLFW_PRESS && ch==2)
-		//select phineas's right upper arm
-		curr_node = phineas_nodes[11];
-
-    else if (key == GLFW_KEY_E && action == GLFW_PRESS && ch==2)
-		//select phineas's right lower arm
-		curr_node = phineas_nodes[12];
-
-    else if (key == GLFW_KEY_R && action == GLFW_PRESS && ch==2)
-		//select phineas's right hand
-		curr_node = phineas_nodes[13];
-
-    else if (key == GLFW_KEY_T && action == GLFW_PRESS && ch==2)
-		//select phineas's neck 
-		curr_node = phineas_nodes[14];
-
-    else if (key == GLFW_KEY_Y && action == GLFW_PRESS && ch==2)
-		//select phineas's head
-		curr_node = phineas_nodes[15];
-    }
 };  
-  

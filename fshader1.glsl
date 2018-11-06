@@ -90,15 +90,15 @@ void main ()
 	  }
 	  else if(Light==1)
 	  {	
-	  	COLOR = ((intensity1 * diffuse1  + spec1)*tex*color + ambient1*tex*color); // All
+	  	COLOR = ((intensity1 * diffuse1  + spec1 + ambient1)*tex*color); // All
 	  }
 	  else if(Light==2)
 	  {
-		COLOR = ((intensity2 * diffuse1  + spec2)*tex*color + ambient1*tex*color); // All
+		COLOR = ((intensity2 * diffuse1  + spec2 + ambient1)*tex*color); // All
 	  }
 	  else
 	  {
-		COLOR = ((intensity1 * diffuse1  + spec1)*tex*color + (intensity2 * diffuse1  + spec2)*tex*color + ambient1*tex*color); // All
+		COLOR = ((intensity1 * diffuse1  + spec1 + intensity2 * diffuse1  + spec2 + ambient1)*tex*color); // All
 	  }
   }
 

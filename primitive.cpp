@@ -442,12 +442,12 @@ namespace csX75
 			glm::vec4(-x/2,  y/2, -z/2, 1.0) - o,
 			glm::vec4( x/2,  y/2, -z/2, 1.0) - o,
 			glm::vec4( x/2,  y/4, -z/2, 1.0) - o,
-			glm::vec4( 0.0,  y/4,  z/2, 1.0) - o,
-			glm::vec4( 0.0,  y/4, -z/2, 1.0) - o,
-			glm::vec4( 0.0, -y/2,  z/2, 1.0) - o,
-			glm::vec4( 0.0, -y/2, -z/2, 1.0) - o,
-			glm::vec4( 0.0,  y/2,  z/2, 1.0) - o,
-			glm::vec4( 0.0,  y/2, -z/2, 1.0) - o
+			glm::vec4( x/4,  y/4,  z/2, 1.0) - o,
+			glm::vec4( x/4,  y/4, -z/2, 1.0) - o,
+			glm::vec4( x/4, -y/2,  z/2, 1.0) - o,
+			glm::vec4( x/4, -y/2, -z/2, 1.0) - o,
+			glm::vec4( x/4,  y/2,  z/2, 1.0) - o,
+			glm::vec4( x/4,  y/2, -z/2, 1.0) - o
 		};
 
 		glm::vec2 t[4] = {
