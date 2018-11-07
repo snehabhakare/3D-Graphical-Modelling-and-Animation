@@ -45,12 +45,12 @@ void main ()
   vec4 spec1 = vec4(0.0), spec2 = vec4(0.0);
  
   // Defining Lamp: Light 1
-  vec4 lightPos1 = vec4(10.0, 3.0, 0.0, 1.0);
+  vec4 lightPos1 = vec4(20.0,3.0,-6.0, 1.0);
   vec3 lightDir1 = vec3(viewMatrix * lightPos1);  // Transforms with camera
   lightDir1 = normalize( vec3(lightDir1));  
   
   // Defining Wall Fixature: Light 2
-  vec4 lightPos2 = vec4(-11.0, 10.0, 0.0, 1.0);
+  vec4 lightPos2 = vec4(-18.0,20.0, 0.0, 1.0);
   vec3 lightDir2 = vec3(viewMatrix * lightPos2);  // Transforms with camera
   lightDir2 = normalize( vec3(lightDir2)); 
 

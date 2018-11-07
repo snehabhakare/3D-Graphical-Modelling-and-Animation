@@ -31,6 +31,7 @@ Individual Rotation Mode: Select one model at a time for inspection
 | B/b      | Box                                                              |
 | N/n      | Phineas                                                          |
 | M/m      | Perry                                                            |
+| V/v      | Door                                                            |
 
 | Keys     | Translation Controls for Current Model (Root node should be selected as current node) |
 |----------|--------------------------------------------|

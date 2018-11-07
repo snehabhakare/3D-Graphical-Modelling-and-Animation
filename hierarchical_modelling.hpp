@@ -22,7 +22,7 @@ GLfloat xpos=0.0,ypos=0.0,zpos=0.0;
 // Rotation Parameters
 GLfloat xrot=0.0,yrot=0.0,zrot=0.0;
 // Camera position and rotation Parameters
-GLfloat c_xpos = 0.0, c_ypos = 0.0, c_zpos = -20.0;
+GLfloat c_xpos = 0.0, c_ypos = 0.0, c_zpos = -22.0;
 GLfloat c_up_x = 0.0, c_up_y = 1.0, c_up_z = 0.0;
 GLfloat c_xrot=0.0,c_yrot=0.0,c_zrot=0.0;
 
@@ -57,7 +57,7 @@ std::vector<csX75::HNode*> control_nodes;
 
 std::vector<glm::vec4> control_points;
 
-GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box, tex_light;
+GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box, tex_light, tex_s_wall;
 
 //-------------------------------------------------------------------------
 
