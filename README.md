@@ -13,17 +13,16 @@ The code in the repository is completely our work and not copied from any where.
 - switch from inspection(global rotation about object's centroid) to individual(individual model rotation) mode and vice versa
 - to get back the objects in view frustrum in case they go out of view after certain transformations
 3. G/g - cycle between Light 1, Light 2, or both being on/off
+4. P/p - enable/disable perspective, by default perspective is enabled
 
-Global Rotation Mode: All the 3 models are selected
-
-| Keys    | Rotation Controls                            |
-|---------|----------------------------------------------|
-| A/a     | anticlockwise global rotation in x-direction |
-| D/d     | clockwise global rotation in x-direction     |
-| Z/z     | anticlockwise global rotation in y-direction |
-| C/c     | clockwise global rotation in y-direction     |
-| S/s     | anticlockwise global rotation in z-direction |
-| X/x     | clockwise global rotation in z-direction     |
+| Keys    | Global Mode (Rotation of all the models)     | Individual Mode (Translation of camera)   |
+|---------|----------------------------------------------|-------------------------------------------|
+| A/a     | anticlockwise global rotation in x-direction | increment translation value in x direction|
+| D/d     | clockwise global rotation in x-direction     | decrement translation value in x direction|
+| Z/z     | anticlockwise global rotation in y-direction | increment translation value in y direction|
+| C/c     | clockwise global rotation in y-direction     | decrement translation value in y direction|
+| S/s     | anticlockwise global rotation in z-direction | increment translation value in z direction|
+| X/x     | clockwise global rotation in z-direction     | decrement translation value in z direction|
 
 Individual Rotation Mode: Select one model at a time for inspection
 
