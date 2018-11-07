@@ -53,8 +53,12 @@ std::vector<csX75::HNode*> side_rack_nodes;
 std::vector<csX75::HNode*> lamp_nodes;
 std::vector<csX75::HNode*> sofa_nodes;
 std::vector<csX75::HNode*> chair_nodes;
+std::vector<csX75::HNode*> control_nodes;
 
 std::vector<glm::vec4> control_points;
+
+GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box, tex_light;
+
 //-------------------------------------------------------------------------
 
 #endif

@@ -4,9 +4,10 @@
 extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot,c_xpos,c_ypos,c_zpos;
 extern bool enable_perspective;
 extern int light;
-extern csX75::HNode* curr_node;
+extern GLuint tex_light;
+extern csX75::HNode* curr_node, *node;
 extern std::vector<glm::vec4> control_points;
-extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes;
+extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
 int ch =0;
 bool op=false;
 extern bool mode;
@@ -57,6 +58,7 @@ namespace csX75
     			glm::vec4 v = control_points.back();
     			std::cout << "Deleted Point: " << v.x << ", " << v.y << ", " << v.z << std::endl;
     			control_points.pop_back();
+    			control_nodes.pop_back();
     		}
     	}
     
@@ -484,12 +486,19 @@ namespace csX75
 		double x=c_xpos, y=c_ypos, z=c_zpos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+			xpos = 768 - xpos;
 			ypos = 768 - ypos;
 			x += xpos/24 - 16;
 			y += ypos/24 - 16;
-			z -= 10;
+			z += 5;
 			std::cout << xpos << " " << ypos << std::endl;
 			control_points.push_back(glm::vec4(x,y,z,1.0));
+			csX75::primitive p;
+		    glm::vec4 red = glm::vec4(1.0, 0.0, 0.0, 1.0);
+		    p = p.draw_cuboid(red, 0.5,0.5,0.5, glm::vec4(0));
+		    node = new csX75::HNode(NULL,p,tex_light);
+		    node->change_parameters(x,y,z,0.0,0.0,0.0);
+		    control_nodes.push_back(node);
 			std::cout << "Selected Point: " << x << ", " << y << ", " << z << std::endl;
 		}
 	}

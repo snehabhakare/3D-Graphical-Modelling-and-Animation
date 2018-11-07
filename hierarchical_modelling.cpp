@@ -18,9 +18,6 @@ GLuint uModelViewMatrix, normalMatrix, viewMatrix, Light;
 glm::vec4 origin = glm::vec4(0.0);
 glm::vec4 white = glm::vec4(1.0);
 
-  // Load Textures 
-GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box,tex_light;
-
 //----------------------------------------------------------------
 void room()
 {
@@ -879,6 +876,8 @@ void renderGL(void)
 	    renderNode(box_nodes[0], 0.0);
 	    renderNode(phineas_nodes[0], 2.0);
 	    renderNode(perry_nodes[0], -2.0);
+        for(int i=0; i<control_nodes.size(); i++)
+            renderNode(control_nodes[i], 0.0);
     }
     else
     {
@@ -911,6 +910,8 @@ void renderGL(void)
 	    box_nodes[0]->render_tree();
 	    perry_nodes[0]->render_tree();
 	    phineas_nodes[0]->render_tree();
+        for(int i=0; i<control_nodes.size(); i++)
+            control_nodes[i]->render_tree();
     }
 }
 
