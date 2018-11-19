@@ -3,6 +3,9 @@
 ## Team members:
 Sneha Bhakare - 150050040, Sukanya Bhattacharjee - 174050012
 
+## Youtube link:
+
+
 ## Disclaimer
 The code in the repository is completely our work and not copied from any where. The tutorials 5,6 and 7 codes are used as the basecode.
 
@@ -14,6 +17,10 @@ The code in the repository is completely our work and not copied from any where.
 - to get back the objects in view frustrum in case they go out of view after certain transformations
 3. G/g - cycle between Light 1, Light 2, or both being on/off
 4. P/p - enable/disable perspective, by default perspective is enabled
+5. F/f - delete last control point
+6. Left mouse click - set a control point
+7. Enter - save configuration of keyframe
+8. SpaceBar - play the animation
 
 | Keys    | Global Mode (Rotation of all the models)     | Individual Mode (Translation of camera)   |
 |---------|----------------------------------------------|-------------------------------------------|

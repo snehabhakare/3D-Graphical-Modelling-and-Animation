@@ -481,7 +481,7 @@ void perry()
     //body -> 0
     p = p.draw_trapezoid_cuboid(color_body, 1.5, 0.5, 0.5, 0.5, origin);
     node = new csX75::HNode(NULL,p,tex_light); 
-    node->change_parameters(-1.0,1.5,0.0,0.0,0.0,0.0);
+    node->change_parameters(-2.0,0.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node);
 
     //left thigh -> 1
@@ -612,7 +612,7 @@ void phineas()
     //hip -> 0
     p = p.draw_cuboid(blue, 1.2,0.2,1.2, origin);
     node = new csX75::HNode(NULL,p,tex_light);
-    node->change_parameters(2.0,1.0,0.0,0.0,0.0,0.0);
+    node->change_parameters(2.0,0.0,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
     
     // left thigh -> 1
@@ -877,8 +877,9 @@ void renderGL(void)
 	    renderNode(box_nodes[0], 0.0);
 	    renderNode(phineas_nodes[0], 2.0);
 	    renderNode(perry_nodes[0], -2.0);
-        for(int i=0; i<control_nodes.size(); i++)
-            renderNode(control_nodes[i], 0.0);
+            
+	    for(int i=0; i<control_nodes.size(); i++)
+            	renderNode(control_nodes[i], 0.0);
     }
     else
     {
@@ -911,8 +912,9 @@ void renderGL(void)
 	    box_nodes[0]->render_tree();
 	    perry_nodes[0]->render_tree();
 	    phineas_nodes[0]->render_tree();
-        for(int i=0; i<control_nodes.size(); i++)
-            control_nodes[i]->render_tree();
+        
+	    for(int i=0; i<control_nodes.size(); i++)
+            	control_nodes[i]->render_tree();
     }
 }
 

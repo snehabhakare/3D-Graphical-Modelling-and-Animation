@@ -1,5 +1,7 @@
 #include "gl_framework.hpp"
 #include "hierarchy_node.hpp"
+#include <fstream>
+#include <iostream>
 
 extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot,c_xpos,c_ypos,c_zpos;
 extern bool enable_perspective;
@@ -11,6 +13,8 @@ extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_n
 int ch =0;
 bool op=false;
 extern bool mode;
+int f = 0;
+int in_bet = 20;
 
 namespace csX75
 {
@@ -276,17 +280,185 @@ namespace csX75
 			}
 	    }
 
+	    else if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	    {
+			std::ofstream myfile;
+			if(f==0)
+			{
+				myfile.open ("keyframes.txt", std::ios::trunc | std::ios::out);
+				f=1;
+			}
+			else
+			{
+				myfile.open ("keyframes.txt", std::ios::out | std::ios::app);
+			}
+
+			GLfloat l[2];
+
+		      	std::cout << "Recording current configuration as keyframe "<<std::endl;
+			
+			if(light==0)
+			{
+				l[0] = 0;
+				l[1] = 0;
+			}
+			else if(light==1)
+			{
+				l[0] = 1;
+				l[1] = 0;
+			}
+			else if(light==2)
+			{
+				l[0] = 0;
+				l[1] = 1;
+			}
+			else
+			{
+				l[0] = 1;
+				l[1] = 1;
+			}      	
+		      	
+			//Get the current configuration and save it
+			myfile<<l[0]<<"\t"<<l[1]<<"\t";
+			GLfloat *p = box_nodes[0]->get_parameters();
+			myfile<<p[0]<<"\t"<<p[1]<<"\t"<<p[2]<<"\t"<<p[4]<<"\t";
+			p = box_nodes[1]->get_parameters();
+			myfile<<p[3]<<"\t";
+			
+			p = perry_nodes[0]->get_parameters();
+			myfile<<p[0]<<"\t"<<p[1]<<"\t"<<p[2]<<"\t"<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = perry_nodes[1]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = perry_nodes[4]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = perry_nodes[7]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = perry_nodes[10]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = perry_nodes[13]->get_parameters();
+			myfile<<p[4]<<"\t"<<p[5]<<"\t";
+			
+			p = phineas_nodes[0]->get_parameters();
+			myfile<<p[0]<<"\t"<<p[1]<<"\t"<<p[2]<<"\t"<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[1]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[4]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[3]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[6]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[8]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[11]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[9]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[12]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[10]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[13]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[7]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[14]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\t";
+			p = phineas_nodes[15]->get_parameters();
+			myfile<<p[3]<<"\t"<<p[4]<<"\t"<<p[5]<<"\n";
+
+
+			myfile.close();	      
+	    }
+
+	    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	    {
+			std::cout<<"Play the animation"<<std::endl;
+			std::ifstream myfile;
+			myfile.open("keyframes.txt"); 
+  
+			GLfloat word;
+			GLfloat p[72], q[72];
+			int i = 0, j=0;
+			
+			// Read the keyframe configuration
+		    	while (myfile >> word && i<72) 
+		    	{ 
+				p[i] = word;
+				//std::cout<<p[i]<<" ";
+				if(i==71)
+				{
+					i=0;
+					//std::cout<<"\n";
+					GLfloat in_frame[in_bet+1][72];
+
+					if(j>0)
+					{
+						for(int h = 0; h<72; h++)
+						{
+							std::cout<<q[h]<<" ";
+						}
+						std::cout<<"\n";
+						for(int h = 0; h<72; h++)
+						{
+							std::cout<<p[h]<<" ";
+						}
+						std::cout<<"\n#################################################################################\n";
+
+		
+						float t = 1/float(in_bet);
+						float k = 0;
+						int d = 0;
+
+						while(k<=1 && d<=in_bet)
+						{
+							if(k < 0.5)
+							{
+								in_frame[d][0] = q[0];
+								in_frame[d][1] = q[1];
+							}
+							else
+							{
+								in_frame[d][0] = p[0];
+								in_frame[d][1] = p[1];
+							}
+
+							std::cout<<in_frame[d][0]<<" "<<in_frame[d][1]<<" ";
+							for(int l=2;l<72;l++)
+							{
+								in_frame[d][l] = (1-k)*q[l] + k*p[l];
+								std::cout<<in_frame[d][l]<<" ";			
+
+							}
+							k+=t; d++;
+							std::cout<<"\n------------------------------------------------------------------\n";
+						}
+						std::cout<<"\n**********************************************************************************\n";
+					}
+
+					for(int h = 0; h<72; h++)
+						q[h] = p[h];
+		
+				}
+				else
+					i++;
+				j++;
+		    	}
+
+			myfile.close();
+	    }
+
 	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
 	    {
 	    	if(mode){
 	    		xrot+=10;
-				// glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];	
+				 glm::vec4 c = curr_node->get_centroid();
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];	
 	    	}
 	    	else{
-	    		c_xpos++;
+	    		//c_xpos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 			
@@ -295,13 +467,13 @@ namespace csX75
 	    {
 	    	if(mode){
 	    		xrot-=10;
-				// glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];
+				 glm::vec4 c = curr_node->get_centroid();
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];
 	    	}
 	    	else{
-	    		c_xpos--;
+	    		//c_xpos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -309,13 +481,13 @@ namespace csX75
 	    {
 	    	if(mode){
 	    		yrot+=10;
-				// glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];
+				 glm::vec4 c = curr_node->get_centroid();
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];
 	    	}
 	    	else{
-	    		c_ypos++;
+	    		//c_ypos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -323,13 +495,13 @@ namespace csX75
 	    {
 	    	if(mode){
 	    		yrot-=10;
-				// glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];	
+				 glm::vec4 c = curr_node->get_centroid();
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];	
 	    	}
 	    	else{
-	    		c_ypos--;
+	    		//c_ypos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -338,12 +510,12 @@ namespace csX75
 	    	if(mode){
 	    		zrot+=10;
 				glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];	
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];	
 	    	}
 	    	else{
-	    		c_zpos++;
+	    		//c_zpos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -351,13 +523,13 @@ namespace csX75
 	    {
 	    	if(mode){
 	    		zrot-=10;
-				// glm::vec4 c = curr_node->get_centroid();
-				// xpos = c[0];
-				// ypos = c[1];
-				// zpos = c[2];	
+				 glm::vec4 c = curr_node->get_centroid();
+				 xpos = c[0];
+				 ypos = c[1];
+				 zpos = c[2];	
 	    	}
 	    	else{
-	    		c_zpos--;
+	    		//c_zpos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -403,7 +575,7 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==1)
 			//select boxes' lid
-	    {		curr_node = box_nodes[1];std::cout<<"Lid selected"<<std::endl;}
+	   		curr_node = box_nodes[1];
 	    else if (key == GLFW_KEY_1 && action == GLFW_PRESS && ch==2)
 			//select phineas's left thigh
 			curr_node = phineas_nodes[1];
