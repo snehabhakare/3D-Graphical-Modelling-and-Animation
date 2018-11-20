@@ -36,7 +36,7 @@ int light=0;
 bool mode=true;
 bool play_back=false;
 bool play_s = false;
-int key_frame = 8;
+int key_frame = 0;
 unsigned char *pRGB;
 unsigned int fr = 0;
 //global matrix stack for hierarchical modelling

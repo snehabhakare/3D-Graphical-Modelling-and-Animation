@@ -839,6 +839,7 @@ void initBuffersGL(void)
   root_node = curr_node = scene_nodes[0];  
 }
 
+//-----------------------------------------------------------------------------------------------------------------------
 void capture_frame(unsigned int framenum)
 {
   int SCREEN_WIDTH=768;
@@ -1214,13 +1215,30 @@ void read_keyframes()
 	GLfloat word;
 	GLfloat r[72];
 	int i = 0, j=0;
-	int y=0;
+	int y=0, z=0;
+
+	// Read the keyframe configuration
+	while (myfile >> word && i<72) 
+	{
+		if(i==71)
+		{
+			i=0;
+			z++;
+		}
+		else
+			i++;
+	}   
+	key_frame = z;
+	myfile.close();
+
+	myfile.open("keyframes.txt"); 
+	i=0;
+	j=0;
 
 	key_f = (GLfloat**)malloc(key_frame* sizeof(GLfloat*));
 	for(int l=0;l<key_frame;l++)
 		key_f[l] = (GLfloat*)malloc(72* sizeof(GLfloat));
 
-	// Read the keyframe configuration
 	while (myfile >> word && i<72) 
 	{ 
 		r[i] = word;
@@ -1234,8 +1252,7 @@ void read_keyframes()
 		}
 		else
 			i++;
-	}   
-	key_frame = y;
+	}
 
 	myfile.close();
 }
