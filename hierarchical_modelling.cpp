@@ -839,7 +839,34 @@ void initBuffersGL(void)
   root_node = curr_node = scene_nodes[0];  
 }
 
-void renderF()
+void capture_frame(unsigned int framenum)
+{
+  int SCREEN_WIDTH=768;
+  int SCREEN_HEIGHT=768;
+  //global pointer float *pRGB
+  pRGB = new unsigned char [3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1) ];
+
+
+  // set the framebuffer to read
+  //default for double buffered
+  glReadBuffer(GL_BACK);
+
+  glPixelStoref(GL_PACK_ALIGNMENT,1);//for word allignment
+  
+  glReadPixels(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pRGB);
+  char filename[200];
+  sprintf(filename,"./frames/frame_%04d.ppm",framenum);
+  std::ofstream out(filename, std::ios::out);
+  out<<"P6"<<std::endl;
+  out<<SCREEN_WIDTH<<" "<<SCREEN_HEIGHT<<" 255"<<std::endl;
+  out.write(reinterpret_cast<char const *>(pRGB), (3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1)) * sizeof(int));
+  out.close();
+
+  //function to store pRGB in a file named count
+  delete pRGB;
+}
+
+void renderF(unsigned int frame)
 {
 	matrixStack.clear();
 
@@ -875,9 +902,11 @@ void renderF()
 
 	 for(int i=0; i<control_nodes.size(); i++)
          	control_nodes[i]->render_tree();
+
+	capture_frame(frame);
 }
 
-void renderFrame(GLfloat q[], GLfloat r[], GLfloat k)
+void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
 {
 	int d = 0;
 	
@@ -1138,7 +1167,7 @@ void renderFrame(GLfloat q[], GLfloat r[], GLfloat k)
 	ary = in_frame[d][70];
 	arz = in_frame[d][71];
 	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
-	renderF();
+	renderF(frame);
   					
 }
 
@@ -1216,9 +1245,10 @@ void renderGL(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     matrixStack.clear();
     double prev, curr;
-
+    
     if(play_back)
-    {       read_keyframes(); 
+    {       
+	read_keyframes(); 
 	if(!play_s)
 	{
 		prev=glfwGetTime();
@@ -1232,8 +1262,9 @@ void renderGL(void)
 
 	if(k<=1)
 	{
-		renderFrame(key_f[j], key_f[j+1], k);			
+		renderFrame(key_f[j], key_f[j+1], k, fr);			
 		k+=tf;
+		fr++;
 	}
 
 	if(k>1)
