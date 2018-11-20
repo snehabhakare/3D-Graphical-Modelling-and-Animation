@@ -34,6 +34,9 @@ bool solid=true;
 GLuint vPosition,vColor,vNormal,vTexture;
 int light=0;
 bool mode=true;
+bool play_back=false;
+bool play_s = false;
+int key_frame = 8;
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;
 

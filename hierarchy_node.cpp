@@ -130,6 +130,7 @@ namespace csX75
 		rz = arz;
 
 		update_matrices();
+		
 	}
 
         GLfloat* HNode::get_parameters()

@@ -7,14 +7,15 @@ extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot,c_xpos,c_ypos,
 extern bool enable_perspective;
 extern int light;
 extern GLuint tex_light;
-extern csX75::HNode* curr_node, *node;
+extern csX75::HNode* curr_node, *node, *root_node;
 extern std::vector<glm::vec4> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
 int ch =0;
 bool op=false;
 extern bool mode;
+extern bool play_back;
+extern int key_frame;
 int f = 0;
-int in_bet = 20;
 
 namespace csX75
 {
@@ -287,6 +288,7 @@ namespace csX75
 			{
 				myfile.open ("keyframes.txt", std::ios::trunc | std::ios::out);
 				f=1;
+				key_frame = 0;
 			}
 			else
 			{
@@ -296,7 +298,8 @@ namespace csX75
 			GLfloat l[2];
 
 		      	std::cout << "Recording current configuration as keyframe "<<std::endl;
-			
+			key_frame ++;
+
 			if(light==0)
 			{
 				l[0] = 0;
@@ -374,78 +377,7 @@ namespace csX75
 	    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	    {
 			std::cout<<"Play the animation"<<std::endl;
-			std::ifstream myfile;
-			myfile.open("keyframes.txt"); 
-  
-			GLfloat word;
-			GLfloat p[72], q[72];
-			int i = 0, j=0;
-			
-			// Read the keyframe configuration
-		    	while (myfile >> word && i<72) 
-		    	{ 
-				p[i] = word;
-				//std::cout<<p[i]<<" ";
-				if(i==71)
-				{
-					i=0;
-					//std::cout<<"\n";
-					GLfloat in_frame[in_bet+1][72];
-
-					if(j>0)
-					{
-						for(int h = 0; h<72; h++)
-						{
-							std::cout<<q[h]<<" ";
-						}
-						std::cout<<"\n";
-						for(int h = 0; h<72; h++)
-						{
-							std::cout<<p[h]<<" ";
-						}
-						std::cout<<"\n#################################################################################\n";
-
-		
-						float t = 1/float(in_bet);
-						float k = 0;
-						int d = 0;
-
-						while(k<=1 && d<=in_bet)
-						{
-							if(k < 0.5)
-							{
-								in_frame[d][0] = q[0];
-								in_frame[d][1] = q[1];
-							}
-							else
-							{
-								in_frame[d][0] = p[0];
-								in_frame[d][1] = p[1];
-							}
-
-							std::cout<<in_frame[d][0]<<" "<<in_frame[d][1]<<" ";
-							for(int l=2;l<72;l++)
-							{
-								in_frame[d][l] = (1-k)*q[l] + k*p[l];
-								std::cout<<in_frame[d][l]<<" ";			
-
-							}
-							k+=t; d++;
-							std::cout<<"\n------------------------------------------------------------------\n";
-						}
-						std::cout<<"\n**********************************************************************************\n";
-					}
-
-					for(int h = 0; h<72; h++)
-						q[h] = p[h];
-		
-				}
-				else
-					i++;
-				j++;
-		    	}
-
-			myfile.close();
+			play_back = true;
 	    }
 
 	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)

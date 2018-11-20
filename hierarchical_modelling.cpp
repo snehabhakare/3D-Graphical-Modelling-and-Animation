@@ -1,5 +1,8 @@
 #include "hierarchical_modelling.hpp"
 #include "texture.cpp"
+#include <fstream>
+#include <iostream>
+#include <unistd.h>
 
 GLuint shaderProgram1;
 GLuint shaderProgram2;
@@ -18,7 +21,17 @@ GLuint uModelViewMatrix, normalMatrix, viewMatrix, Light;
 glm::vec4 origin = glm::vec4(0.0);
 glm::vec4 white = glm::vec4(1.0);
 
+int in_bet = 30;
+GLfloat tf = 1/float(in_bet);
+GLfloat k = 0;
+GLfloat in_frame[1][72];
+GLfloat **key_f;
+int d = 0;
+int j=0;
+
+double timer=0;
 //----------------------------------------------------------------
+
 void room()
 {
     csX75::primitive p;
@@ -455,15 +468,15 @@ void box()
     glm::vec4 color_lid = white;
 
     // box -> 0
-    p = p.draw_cuboid_oc(color_out, color_in, 5.0, 4.0, 3.0, origin);
+    p = p.draw_cuboid_oc(color_out, color_in, 8.0, 8.0, 6.0, origin);
     node = new csX75::HNode(NULL,p, tex_box); 
-    node->change_parameters(0.0,-1.5,0.0,0.0,180.0,0.0);
+    node->change_parameters(0.0,0.0,0.0,0.0,180.0,0.0);
     box_nodes.push_back(node);
 
     // lid -> 1
-    p = p.draw_plane_ex(color_lid, 5.0, 4.0, 3.0, glm::vec4(0,0,-1.5,0));
+    p = p.draw_plane_ex(color_lid, 8.0, 8.0, 6.0, glm::vec4(0,0,-3.0,0));
     node = new csX75::HNode(box_nodes[0],p, tex_box); 
-    node->change_parameters(0.0,2.0,-1.5,0.0,0.0,0.0);
+    node->change_parameters(0.0,4.0,-3.0,0.0,0.0,0.0);
     box_nodes.push_back(node);
 
 }
@@ -481,7 +494,7 @@ void perry()
     //body -> 0
     p = p.draw_trapezoid_cuboid(color_body, 1.5, 0.5, 0.5, 0.5, origin);
     node = new csX75::HNode(NULL,p,tex_light); 
-    node->change_parameters(-2.0,0.0,0.0,0.0,0.0,0.0);
+    node->change_parameters(-3.0,4.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node);
 
     //left thigh -> 1
@@ -612,7 +625,7 @@ void phineas()
     //hip -> 0
     p = p.draw_cuboid(blue, 1.2,0.2,1.2, origin);
     node = new csX75::HNode(NULL,p,tex_light);
-    node->change_parameters(2.0,0.0,0.0,0.0,0.0,0.0);
+    node->change_parameters(1.0,3.5,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
     
     // left thigh -> 1
@@ -826,17 +839,320 @@ void initBuffersGL(void)
   root_node = curr_node = scene_nodes[0];  
 }
 
-void renderNode(csX75::HNode* curr, float x)
+void renderF()
+{
+	matrixStack.clear();
+
+	if(enable_perspective)
+		projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 700.0);
+	else
+		projection_matrix = glm::ortho(-16.0, 16.0, -16.0, 16.0, -100.0, 200.0);
+
+	 c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_xrot), glm::vec3(1.0f,0.0f,0.0f));
+	 c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_yrot), glm::vec3(0.0f,1.0f,0.0f));
+	 c_rotation_matrix = glm::rotate(c_rotation_matrix, glm::radians(c_zrot), glm::vec3(0.0f,0.0f,1.0f));
+
+	 //c_rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(c_xpos, 0.0, 0.0));
+	 glm::vec4 c_pos = glm::vec4(c_xpos,c_ypos,c_zpos, 1.0)*c_rotation_matrix;
+	 glm::vec4 c_up = glm::vec4(c_up_x,c_up_y,c_up_z, 1.0)*c_rotation_matrix;
+	 //Creating the lookat matrix
+	 lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
+	 view_matrix = projection_matrix*lookat_matrix;
+
+	 matrixStack.push_back(view_matrix);
+
+	 room_nodes[0]->render_tree();
+	 table_nodes[0]->render_tree();
+	 side_table_nodes[0]->render_tree();
+	 side_rack_nodes[0]->render_tree();
+	 wall_light_nodes[0]->render_tree();
+	 sofa_nodes[0]->render_tree();
+	 chair_nodes[0]->render_tree();
+	 lamp_nodes[0]->render_tree();
+	 box_nodes[0]->render_tree();
+	 perry_nodes[0]->render_tree();
+	 phineas_nodes[0]->render_tree();
+
+	 for(int i=0; i<control_nodes.size(); i++)
+         	control_nodes[i]->render_tree();
+}
+
+void renderFrame(GLfloat q[], GLfloat r[], GLfloat k)
+{
+	int d = 0;
+	
+	if(k <= 0.5)
+	{
+		in_frame[d][0] = q[0];
+		in_frame[d][1] = q[1];
+	}
+	else
+	{
+		in_frame[d][0] = r[0];
+		in_frame[d][1] = r[1];
+	}
+
+	for(int l=2;l<72;l++)
+	{
+		in_frame[d][l] = (1-k)*q[l] + k*r[l];			
+
+	}
+
+	//set configuration from interpolated frame
+	if(in_frame[d][0]==0 && in_frame[d][1]==0)
+	{
+		light=0;
+	}
+	else if(in_frame[d][0]==1 && in_frame[d][1]==0)
+	{
+		light=1;
+	}
+	else if(in_frame[d][0]==0 && in_frame[d][1]==1)
+	{
+		light=2;
+	}
+	else
+	{
+		light=3;
+	}
+	
+	csX75::HNode* read_node;
+	GLfloat atx, aty, atz, arx, ary, arz;
+
+	read_node = box_nodes[0];
+	GLfloat *p = read_node->get_parameters();
+	atx = in_frame[d][2];
+	aty = in_frame[d][3];
+	atz = in_frame[d][4];
+	arx = p[3];
+	ary = in_frame[d][5];
+	arz = p[5];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = box_nodes[1];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][6];
+	ary = p[4];
+	arz = p[5];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[0];
+	p = read_node->get_parameters();
+	atx = in_frame[d][7];
+	aty = in_frame[d][8];
+	atz = in_frame[d][9];
+	arx = in_frame[d][10];
+	ary = in_frame[d][11];
+	arz = in_frame[d][12];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[1];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][13];
+	ary = in_frame[d][14];
+	arz = in_frame[d][15];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[4];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][16];
+	ary = in_frame[d][17];
+	arz = in_frame[d][18];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[7];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][19];
+	ary = in_frame[d][20];
+	arz = in_frame[d][21];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[10];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][22];
+	ary = in_frame[d][23];
+	arz = in_frame[d][24];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = perry_nodes[13];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][25];
+	ary = in_frame[d][26];
+	arz = in_frame[d][27];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[0];
+	p = read_node->get_parameters();
+	atx = in_frame[d][28];
+	aty = in_frame[d][29];
+	atz = in_frame[d][30];
+	arx = in_frame[d][31];
+	ary = in_frame[d][32];
+	arz = in_frame[d][33];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[1];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][34];
+	ary = in_frame[d][35];
+	arz = in_frame[d][36];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[4];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][37];
+	ary = in_frame[d][38];
+	arz = in_frame[d][39];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[3];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][40];
+	ary = in_frame[d][41];
+	arz = in_frame[d][42];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[6];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][43];
+	ary = in_frame[d][44];
+	arz = in_frame[d][45];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[8];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][46];
+	ary = in_frame[d][47];
+	arz = in_frame[d][48];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[11];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][49];
+	ary = in_frame[d][50];
+	arz = in_frame[d][51];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[9];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][52];
+	ary = in_frame[d][53];
+	arz = in_frame[d][54];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[12];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][55];
+	ary = in_frame[d][56];
+	arz = in_frame[d][57];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[10];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][58];
+	ary = in_frame[d][59];
+	arz = in_frame[d][60];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[13];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][61];
+	ary = in_frame[d][62];
+	arz = in_frame[d][63];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[7];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][64];
+	ary = in_frame[d][65];
+	arz = in_frame[d][66];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[14];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][66];
+	ary = in_frame[d][67];
+	arz = in_frame[d][68];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+
+	read_node = phineas_nodes[15];
+	p = read_node->get_parameters();
+	atx = p[0];
+	aty = p[1];
+	atz = p[2];
+	arx = in_frame[d][69];
+	ary = in_frame[d][70];
+	arz = in_frame[d][71];
+	read_node->change_parameters(atx, aty, atz, arx, ary, arz);
+	renderF();
+  					
+}
+
+void renderNode(csX75::HNode* curr, float x, float y)
 {
     
     matrixStack.clear();
     curr_node = curr;
 
-    rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(xpos-x), -ypos, -zpos));
+    rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-(xpos-x), -(ypos), -zpos));
     rotation_matrix = glm::rotate(rotation_matrix, glm::radians(xrot), glm::vec3(1.0f,0.0f,0.0f));
     rotation_matrix = glm::rotate(rotation_matrix, glm::radians(yrot), glm::vec3(0.0f,1.0f,0.0f));
     rotation_matrix = glm::rotate(rotation_matrix, glm::radians(zrot), glm::vec3(0.0f,0.0f,1.0f));
-    rotation_matrix = glm::translate(rotation_matrix, glm::vec3((xpos-x), ypos, zpos));
+    rotation_matrix = glm::translate(rotation_matrix, glm::vec3((xpos-x), (ypos), zpos));
     model_matrix = rotation_matrix;
 
     if(enable_perspective)
@@ -851,6 +1167,7 @@ void renderNode(csX75::HNode* curr, float x)
     //c_rotation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(c_xpos, 0.0, 0.0));
     glm::vec4 c_pos = glm::vec4(c_xpos,c_ypos,c_zpos, 1.0)*c_rotation_matrix;
     glm::vec4 c_up = glm::vec4(c_up_x,c_up_y,c_up_z, 1.0)*c_rotation_matrix;
+
     //Creating the lookat matrix
     lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
     view_matrix = projection_matrix*lookat_matrix*model_matrix;
@@ -860,29 +1177,100 @@ void renderNode(csX75::HNode* curr, float x)
     curr_node->render_tree();
 }
 
+void read_keyframes()
+{
+	std::ifstream myfile;
+	myfile.open("keyframes.txt"); 
+
+	GLfloat word;
+	GLfloat r[72];
+	int i = 0, j=0;
+	int y=0;
+
+	key_f = (GLfloat**)malloc(key_frame* sizeof(GLfloat*));
+	for(int l=0;l<key_frame;l++)
+		key_f[l] = (GLfloat*)malloc(72* sizeof(GLfloat));
+
+	// Read the keyframe configuration
+	while (myfile >> word && i<72) 
+	{ 
+		r[i] = word;
+
+		if(i==71)
+		{
+			i=0;
+			for(int l=0;l<72;l++)
+				key_f[y][l] = r[l];
+			y++;
+		}
+		else
+			i++;
+	}   
+	key_frame = y;
+
+	myfile.close();
+}
+
 void renderGL(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-     matrixStack.clear();
-    if(mode)
+    matrixStack.clear();
+    double prev, curr;
+
+    if(play_back)
+    {       read_keyframes(); 
+	if(!play_s)
+	{
+		prev=glfwGetTime();
+		play_s = true;
+		k = 0;
+		j = 0;
+		
+	}
+	curr = glfwGetTime();
+ 	//std::cout<<prev<<" "<<curr<<" "<<std::endl;
+
+	if(k<=1)
+	{
+		renderFrame(key_f[j], key_f[j+1], k);			
+		k+=tf;
+	}
+
+	if(k>1)
+	{
+		j++;
+		k = 0;
+	}
+				
+	if(j==key_frame-1)
+	{
+		play_back=false;
+		play_s=false;
+		//root_node->render_tree();
+	}
+	timer++;
+
+    }
+    else if(!play_back && mode)
     {
-	    renderNode(room_nodes[0], 0.0);
-	    renderNode(table_nodes[0], 0.0);
-	    renderNode(side_table_nodes[0], 0.0);
-	    renderNode(side_rack_nodes[0], 0.0);
-	    renderNode(wall_light_nodes[0], 0.0);
-	    renderNode(sofa_nodes[0], 0.0);
-	    renderNode(chair_nodes[0], 0.0);
-	    renderNode(lamp_nodes[0], 0.0);
-	    renderNode(box_nodes[0], 0.0);
-	    renderNode(phineas_nodes[0], 2.0);
-	    renderNode(perry_nodes[0], -2.0);
+	    renderNode(room_nodes[0], 0.0, 0.0);
+	    renderNode(table_nodes[0], 0.0, 0.0);
+	    renderNode(side_table_nodes[0], 0.0, 0.0);
+	    renderNode(side_rack_nodes[0], 0.0, 0.0);
+	    renderNode(wall_light_nodes[0], 0.0, 0.0);
+	    renderNode(sofa_nodes[0], 0.0, 0.0);
+	    renderNode(chair_nodes[0], 0.0, 0.0);
+	    renderNode(lamp_nodes[0], 0.0, 0.0);
+	    renderNode(box_nodes[0], 0.0, 0.0);
+	    renderNode(phineas_nodes[0], -1.25, 3.0);
+	    renderNode(perry_nodes[0], -3.0, 3.0 );
             
 	    for(int i=0; i<control_nodes.size(); i++)
-            	renderNode(control_nodes[i], 0.0);
+            	renderNode(control_nodes[i], 0.0, 0.0);
     }
-    else
+    else if(!play_back && !mode)
     {
+        matrixStack.clear();
         if(enable_perspective)
             projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 700.0);
         else
@@ -948,8 +1336,8 @@ int main(int argc, char** argv)
 
     //! Make the window's context current 
     glfwMakeContextCurrent(window);
-
-    //Initialize GLEW
+	
+   //Initialize GLEW
     //Turn this on to get Shader based OpenGL
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -977,14 +1365,14 @@ int main(int argc, char** argv)
     //Initialize GL state
     csX75::initGL();
     initBuffersGL();
+    glfwSetTime(30.f);
 
     // Loop until the user closes the window
     while (glfwWindowShouldClose(window) == 0)
     {
-        // Render here
-        renderGL();
+	renderGL();
 
-        // Swap front and back buffers
+	// Swap front and back buffers
         glfwSwapBuffers(window);
 
         // Poll for and process events
