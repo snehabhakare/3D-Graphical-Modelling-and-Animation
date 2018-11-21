@@ -606,19 +606,9 @@ namespace csX75
 		double x=c_xpos, y=c_ypos, z=c_zpos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-			// std::cout << xpos << " " << ypos << std::endl;
-			// x += (768 - xpos)/24 - 16;
-			// y += (768 - ypos)/24 - 13;
-			// z += 5;
-			xpos = c_xpos -1+xpos/(2*768);
-			ypos = c_ypos +1-ypos/(2*768);
-
 			glm::vec3 pnt;
-			pnt = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(c_xpos-0.5, c_xpos+0.5, c_ypos-0.5, c_ypos+0.5));
-			// point.x += c_xpos;
-			// point.y += c_ypos;
+			pnt = glm::unProject(glm::vec3(xpos, 768-ypos, 0.5), lookat_matrix, projection_matrix, glm::vec4(0, 0, 768, 768));
 			glm::vec4 point = glm::vec4(pnt.x, pnt.y, pnt.z, 1);
-			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
 			
 			control_points.push_back(point);
 			csX75::primitive p;
