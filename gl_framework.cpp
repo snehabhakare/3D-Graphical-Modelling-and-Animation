@@ -9,7 +9,7 @@ extern int light;
 extern std::string filename;
 extern GLuint tex_light;
 extern csX75::HNode* curr_node, *node, *root_node;
-extern std::vector<glm::vec3> control_points;
+extern std::vector<glm::vec4> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
 extern glm::mat4 projection_matrix, lookat_matrix;
 extern void read_keyframes();
@@ -64,7 +64,7 @@ namespace csX75
     	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
     	{
     		if(!control_points.empty()){
-    			glm::vec3 v = control_points.back();
+    			glm::vec4 v = control_points.back();
     			std::cout << "Deleted Point: " << v.x << ", " << v.y << ", " << v.z << std::endl;
     			control_points.pop_back();
     			control_nodes.pop_back();
@@ -387,7 +387,9 @@ namespace csX75
 	    else if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
 	    {
 	    	render_path = !render_path;
-	    	initPath();
+	 		if(render_path){
+	 			initPath();
+	 		}
 	    }
 
 	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
@@ -606,14 +608,12 @@ namespace csX75
 			xpos = c_xpos -1+xpos/(2*768);
 			ypos = c_ypos +1-ypos/(2*768);
 
-			glm::vec3 point;
-			point = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(c_xpos-0.5, c_xpos+0.5, c_ypos-0.5, c_ypos+0.5));
-			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
-			// point = glm::unProject(glm::vec3(xpos, ypos, 1), lookat_matrix, projection_matrix, glm::vec4(-0.5, 0.5, -0.5, 0.5));
-			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
+			glm::vec3 pnt;
+			pnt = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(c_xpos-0.5, c_xpos+0.5, c_ypos-0.5, c_ypos+0.5));
 			// point.x += c_xpos;
 			// point.y += c_ypos;
-			std::cout << point.x << " " << point.y << " " << point.z << std::endl;
+			glm::vec4 point = glm::vec4(pnt.x, pnt.y, pnt.z, 1);
+			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
 			
 			control_points.push_back(point);
 			csX75::primitive p;
@@ -622,7 +622,7 @@ namespace csX75
 		    node = new csX75::HNode(NULL,p,tex_light);
 		    node->change_parameters(point.x,point.y,point.z,0.0,0.0,0.0);
 		    control_nodes.push_back(node);
-			// std::cout << "Selected Point: " << x << ", " << y << ", " << z << std::endl;
+			std::cout << "Selected Point: " << point.x << ", " << point.y << ", " << point.z << std::endl;
 		}
 	}
 };  

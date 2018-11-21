@@ -28,7 +28,7 @@ unsigned char *pRGB;
 unsigned char *pRGB1;
 GLfloat th;
 int num_points = 0;
-GLuint vao,vbo; 
+GLuint vao,vbo, texture; 
 //----------------------------------------------------------------
 
 void room()
@@ -842,8 +842,8 @@ void initBuffersGL(void)
 
 
 //-----------------------------------------------------------------------------------------------------------------------
-glm::vec3 getPoint(float t){
-    std::vector<glm::vec3> Points = control_points;
+glm::vec4 getPoint(float t){
+    std::vector<glm::vec4> Points = control_points;
     for(int k=1; k<Points.size(); k++){
         for(int i=0; i<Points.size()-k; i++){
             Points[i] = (1 - t)*Points[i] + t*Points[i+1];
@@ -853,18 +853,23 @@ glm::vec3 getPoint(float t){
 }
 
 void initPath(){
-	glm::vec3 point;
+	glm::vec4 point;
 	control_path.clear();
-	for(float i=0; i<=1; i+=0.1){
+	float n = 4*control_points.size();
+	for(float i=0; i<=1.01; i+=1.0/n){
 		point = getPoint(i);
 		// std::cout << i << " " << point.x << " " << point.y << " " << point.z << std::endl;
 		control_path.push_back(point);
 	}
 
 	num_points = control_path.size();
-	std::vector<glm::vec3> colors(num_points, glm::vec3(1,0,0));
+	std::vector<glm::vec4> colors(num_points, glm::vec4(1,0,0,1));
+	std::vector<glm::vec4> normals(num_points, glm::vec4(0,0,0,1));
+	std::vector<glm::vec2> tex(num_points, glm::vec2(0,0));
 	std::size_t vsize = sizeof(control_path[0]) * num_points;
 	std::size_t csize = sizeof(colors[0]) * num_points;
+	std::size_t nsize = sizeof(normals[0]) * num_points;
+	std::size_t tsize = sizeof(tex[0]) * num_points;
 	// initialize vao and vbo of the object;
 	//Ask GL for a Vertex Attribute Objects (vao)
 	glGenVertexArrays (1, &vao);
@@ -875,16 +880,24 @@ void initPath(){
 	glBindVertexArray (vao);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	
-	glBufferData (GL_ARRAY_BUFFER, vsize + csize, NULL, GL_STATIC_DRAW);
+	glBufferData (GL_ARRAY_BUFFER, vsize + csize + nsize + tsize, NULL, GL_STATIC_DRAW);
 	glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &control_path[0] );
 	glBufferSubData( GL_ARRAY_BUFFER, vsize, csize, &colors[0] );
-	
+	glBufferSubData( GL_ARRAY_BUFFER, vsize + csize, nsize, &normals[0] );
+	glBufferSubData( GL_ARRAY_BUFFER, vsize + csize + nsize, tsize, &tex[0] );
+
 	//setup the vertex array as per the shader
 	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+	glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 
 	glEnableVertexAttribArray( vColor );
-	glVertexAttribPointer( vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vsize));
+	glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vsize));
+
+	glEnableVertexAttribArray( vNormal );
+	glVertexAttribPointer( vNormal, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vsize + csize));
+
+  	glEnableVertexAttribArray( vTexture );
+  	glVertexAttribPointer( vTexture, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vsize + csize + nsize));
 }
 
 
@@ -1344,9 +1357,20 @@ void renderGL(unsigned int frame)
     }
 
     if(render_path){
-    	// std::cout << control_points.size() << std::endl;
+    	glm::mat4* ms_mult;
+		ms_mult = new glm::mat4(1.0f);
+	
+		for(int i=0;i<matrixStack.size();i++){
+			*ms_mult = (*ms_mult) * matrixStack[i];
+		}
+    	glBindTexture(GL_TEXTURE_2D, tex_light);
+		glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, glm::value_ptr(view_matrix));
+		glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(*ms_mult));
+		normal_matrix = glm::mat3(glm::transpose (glm::inverse(glm::mat4(glm::inverse(view_matrix) * *ms_mult))));
+		glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+		glUniform1i(Light,light);
     	glBindVertexArray (vao);
-		glDrawArrays(GL_TRIANGLES, 0, control_points.size());
+		glDrawArrays(GL_LINE_STRIP, 0, control_path.size());
     }
 }
 
@@ -1427,7 +1451,7 @@ int main(int argc, char** argv)
     double du = 1.0/total_frames;
     double u = 0, k = 0;
     double tf = 1/float(in_bet);
-    glm::vec3 pos;
+    glm::vec4 pos;
     // Loop until the user closes the window
     while (glfwWindowShouldClose(window) == 0)
     {
