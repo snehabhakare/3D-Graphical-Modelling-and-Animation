@@ -786,13 +786,13 @@ void initBuffersGL(void)
   tex_floor=LoadTexture("textures/floor.bmp",800,800);
   tex_pat=LoadTexture("textures/lamp_pat.bmp",294,171);
   tex_sofa=LoadTexture("textures/sofa.bmp",1280,617);
-  tex_wall=LoadTexture("textures/wall2.bmp",1300,1300);
+  tex_wall=LoadTexture("textures/wall3.bmp",1300,800);
   tex_wood=LoadTexture("textures/wood.bmp",224,224);
   tex_wood_chair=LoadTexture("textures/wood_chair.bmp",500,375);
   tex_st=LoadTexture("textures/lamp_stand.bmp",251,201);
   tex_box=LoadTexture("textures/box.bmp",768,1024);
   tex_light=LoadTexture("textures/light.bmp",390,280);
-  tex_s_wall=LoadTexture("textures/wall.bmp",1024,680);
+  tex_s_wall=LoadTexture("textures/wall2.bmp",1300,1300);
   //tex_s_wall = tex_wall;
   tex_wall_light=LoadTexture("textures/wall_light.bmp",480,480);
 
@@ -916,7 +916,7 @@ void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
 	atx = p[0];
 	aty = p[1];
 	atz = p[2];
-	if(in_frame[c] == p[3] && p[3]<-80){
+	if(in_frame[c] == p[3] && p[3]<-60){
 		x = true;
 		th = p[3];
 	}
@@ -1240,7 +1240,7 @@ void renderGL(unsigned int frame)
             if(!play_back || !play_camera)
 	    {
 		GLfloat *q = box_nodes[1]->get_parameters();
-		if(q[3]<=-80 || x){
+		if(q[3]<=-60 || x){
 		    renderNode(phineas_nodes[0], 0.0, 3.0);
 		    renderNode(perry_nodes[0], 0.0, 3.0 );}
 	    }
@@ -1288,7 +1288,7 @@ void renderGL(unsigned int frame)
     if(!play_back || !play_camera)
     {
 	GLfloat *q = box_nodes[1]->get_parameters();
-	if(q[3]<=-80 || x){
+	if(q[3]<=-60 || x){
 	phineas_nodes[0]->render_tree();
         perry_nodes[0]->render_tree();}
 	    }
@@ -1299,7 +1299,7 @@ void renderGL(unsigned int frame)
 
     if(play_back || play_camera){
         // std::cout << frame << std::endl;
-        // capture_frame(frame);
+        capture_frame(frame);
     }
 }
 
