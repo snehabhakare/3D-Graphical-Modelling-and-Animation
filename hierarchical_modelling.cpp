@@ -786,13 +786,15 @@ void initBuffersGL(void)
   tex_floor=LoadTexture("textures/floor.bmp",800,800);
   tex_pat=LoadTexture("textures/lamp_pat.bmp",294,171);
   tex_sofa=LoadTexture("textures/sofa.bmp",1280,617);
-  tex_wall=LoadTexture("textures/wall.bmp",1024,680);
+  tex_wall=LoadTexture("textures/wall2.bmp",1300,1300);
   tex_wood=LoadTexture("textures/wood.bmp",224,224);
   tex_wood_chair=LoadTexture("textures/wood_chair.bmp",500,375);
   tex_st=LoadTexture("textures/lamp_stand.bmp",251,201);
   tex_box=LoadTexture("textures/box.bmp",768,1024);
   tex_light=LoadTexture("textures/light.bmp",390,280);
-  tex_s_wall=LoadTexture("textures/pattern.bmp",225,225);
+  //tex_s_wall=LoadTexture("textures/pattern.bmp",225,225);
+  tex_s_wall = tex_wall;
+  tex_wall_light=LoadTexture("textures/wall_light.bmp",480,480);
 
   // Load shaders and use the resulting shader program
   std::string vertex_shader_file1("vshader1.glsl");
