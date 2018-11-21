@@ -4,7 +4,7 @@
 Sneha Bhakare - 150050040, Sukanya Bhattacharjee - 174050012
 
 ## Youtube link:
-
+https://www.youtube.com/watch?v=p9IwyA2sZ44
 
 ## Disclaimer
 The code in the repository is completely our work and not copied from any where. The tutorials 5,6 and 7 codes are used as the basecode. Online reference used for saving frames as PPM files.
@@ -22,6 +22,8 @@ The code in the repository is completely our work and not copied from any where.
 7. Enter - save configuration of keyframe
 8. SpaceBar - play the animation
 9. Minus - play camera animation
+10. Equal to - cycle between render/not render camera path
+11. Tab - to save the animated frames
 
 | Keys    | Global Mode (Rotation of all the models)     | Individual Mode (Translation of camera)   |
 |---------|----------------------------------------------|-------------------------------------------|

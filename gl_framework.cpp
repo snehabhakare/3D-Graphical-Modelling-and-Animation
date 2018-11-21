@@ -16,7 +16,7 @@ extern void read_keyframes();
 extern void initPath();
 int ch =0;
 bool op=false;
-extern bool mode, x;
+extern bool mode, x, capture;
 extern bool play_back, play_camera, render_path;
 extern int key_frame;
 int f = 0;
@@ -505,6 +505,11 @@ namespace csX75
 			ch=4;
 			op=true;
 	    }
+
+	    else if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
+	    {
+		capture = !capture;
+            }
 
 	    else if (key == GLFW_KEY_0 && action == GLFW_PRESS && ch==1)
 			//select boxes' body
