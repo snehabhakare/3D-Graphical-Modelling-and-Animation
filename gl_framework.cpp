@@ -6,14 +6,17 @@
 extern GLfloat xrot,yrot,zrot,xpos,ypos,zpos,c_xrot,c_yrot,c_zrot,c_xpos,c_ypos,c_zpos;
 extern bool enable_perspective;
 extern int light;
+extern std::string filename;
 extern GLuint tex_light;
 extern csX75::HNode* curr_node, *node, *root_node;
-extern std::vector<glm::vec4> control_points;
+extern std::vector<glm::vec3> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
+extern glm::mat4 projection_matrix, model_matrix, view_matrix;
+extern void read_keyframes();
 int ch =0;
 bool op=false;
 extern bool mode;
-extern bool play_back;
+extern bool play_back, play_camera;
 extern int key_frame;
 int f = 0;
 
@@ -60,7 +63,7 @@ namespace csX75
     	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
     	{
     		if(!control_points.empty()){
-    			glm::vec4 v = control_points.back();
+    			glm::vec3 v = control_points.back();
     			std::cout << "Deleted Point: " << v.x << ", " << v.y << ", " << v.z << std::endl;
     			control_points.pop_back();
     			control_nodes.pop_back();
@@ -286,43 +289,20 @@ namespace csX75
 			std::ofstream myfile;
 			if(f==0)
 			{
-				myfile.open ("keyframes.txt", std::ios::trunc | std::ios::out);
+				myfile.open (filename, std::ios::trunc | std::ios::out);
 				f=1;
 				key_frame = 0;
 			}
 			else
 			{
-				myfile.open ("keyframes.txt", std::ios::out | std::ios::app);
+				myfile.open (filename, std::ios::out | std::ios::app);
 			}
 
-			GLfloat l[2];
-
-		      	std::cout << "Recording current configuration as keyframe "<<std::endl;
+			std::cout << "Recording current configuration as keyframe "<<std::endl;
 			key_frame ++;
-
-			if(light==0)
-			{
-				l[0] = 0;
-				l[1] = 0;
-			}
-			else if(light==1)
-			{
-				l[0] = 1;
-				l[1] = 0;
-			}
-			else if(light==2)
-			{
-				l[0] = 0;
-				l[1] = 1;
-			}
-			else
-			{
-				l[0] = 1;
-				l[1] = 1;
-			}      	
-		      	
+  	
 			//Get the current configuration and save it
-			myfile<<l[0]<<"\t"<<l[1]<<"\t";
+			myfile<<light<<"\t";
 			GLfloat *p = box_nodes[0]->get_parameters();
 			myfile<<p[0]<<"\t"<<p[1]<<"\t"<<p[2]<<"\t"<<p[4]<<"\t";
 			p = box_nodes[1]->get_parameters();
@@ -376,8 +356,29 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	    {
-			std::cout<<"Play the animation"<<std::endl;
-			play_back = true;
+	    	std::ifstream myfile(filename);
+	    	if(!myfile){
+	    		std::cout << filename << " is missing" << std::endl;
+	    	}
+	    	else{
+	    		std::cout<<"Play the animation"<<std::endl;
+				play_back = true;
+				read_keyframes();
+				glfwSetTime(0.0);
+	    	}
+	    }
+
+	    else if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
+	    {
+	    	if(control_points.size()==1){
+	    		c_xpos = control_points[0].x;
+	    		c_ypos = control_points[0].y;
+	    		c_zpos = control_points[0].z;
+	    	}
+	    	else if(control_points.size()>1){
+	    		play_camera = true;
+	    		glfwSetTime(0.0);
+	    	}
 	    }
 
 	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
@@ -390,10 +391,9 @@ namespace csX75
 				 zpos = c[2];	
 	    	}
 	    	else{
-	    		//c_xpos++;
+	    		c_xpos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
-			
 	    }
 	    else if (key == GLFW_KEY_D && action == GLFW_PRESS)
 	    {
@@ -405,7 +405,7 @@ namespace csX75
 				 zpos = c[2];
 	    	}
 	    	else{
-	    		//c_xpos--;
+	    		c_xpos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -419,7 +419,7 @@ namespace csX75
 				 zpos = c[2];
 	    	}
 	    	else{
-	    		//c_ypos++;
+	    		c_ypos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -433,7 +433,7 @@ namespace csX75
 				 zpos = c[2];	
 	    	}
 	    	else{
-	    		//c_ypos--;
+	    		c_ypos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -447,7 +447,7 @@ namespace csX75
 				 zpos = c[2];	
 	    	}
 	    	else{
-	    		//c_zpos++;
+	    		c_zpos++;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -461,7 +461,7 @@ namespace csX75
 				 zpos = c[2];	
 	    	}
 	    	else{
-	    		//c_zpos--;
+	    		c_zpos--;
 	    		std::cout << "Camera co-ordinates: " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
 	    	}
 	    }
@@ -590,13 +590,21 @@ namespace csX75
 		double x=c_xpos, y=c_ypos, z=c_zpos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-			xpos = 768 - xpos;
-			ypos = 768 - ypos;
-			x += xpos/24 - 16;
-			y += ypos/24 - 16;
+			// std::cout << xpos << " " << ypos << std::endl;
+			x += (768 - xpos)/24 - 16;
+			y += (768 - xpos)/24 - 16;
 			z += 5;
-			std::cout << xpos << " " << ypos << std::endl;
-			control_points.push_back(glm::vec4(x,y,z,1.0));
+			GLdouble *model = (GLdouble*)glm::value_ptr(model_matrix);
+			GLdouble *proj = (GLdouble*)glm::value_ptr(projection_matrix);
+			GLint *view = (GLint*)glm::value_ptr(view_matrix);
+
+			double ox, oy, oz;
+			gluUnProject(xpos, ypos, 0, model, proj, view, &ox, &oy, &oz);
+			// std::cout << ox << " " << oy << " " << oz << std::endl;
+			gluUnProject(xpos, ypos, 1, model, proj, view, &ox, &oy, &oz);
+			// std::cout << ox << " " << oy << " " << oz << std::endl;
+			
+			control_points.push_back(glm::vec3(x,y,z));
 			csX75::primitive p;
 		    glm::vec4 red = glm::vec4(1.0, 0.0, 0.0, 1.0);
 		    p = p.draw_cuboid(red, 0.5,0.5,0.5, glm::vec4(0));

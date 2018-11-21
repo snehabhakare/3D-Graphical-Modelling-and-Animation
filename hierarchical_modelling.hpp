@@ -35,12 +35,16 @@ GLuint vPosition,vColor,vNormal,vTexture;
 int light=0;
 bool mode=true;
 bool play_back=false;
+bool play_camera = false;
 bool play_s = false;
 int key_frame = 0;
-unsigned char *pRGB;
 unsigned int fr = 0;
+std::string filename = "keyframes2.txt";
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;
+glm::mat4 projection_matrix;
+glm::mat4 model_matrix;
+glm::mat4 view_matrix;
 
 csX75::HNode* root_node;
 csX75::HNode* curr_node;
@@ -60,10 +64,10 @@ std::vector<csX75::HNode*> sofa_nodes;
 std::vector<csX75::HNode*> chair_nodes;
 std::vector<csX75::HNode*> control_nodes;
 
-std::vector<glm::vec4> control_points;
+std::vector<glm::vec3> control_points;
 
 GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box, tex_light, tex_s_wall;
-
+void read_keyframes();
 //-------------------------------------------------------------------------
 
 #endif
