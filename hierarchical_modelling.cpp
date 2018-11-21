@@ -1299,7 +1299,7 @@ void renderGL(unsigned int frame)
 
     if(play_back || play_camera){
         // std::cout << frame << std::endl;
-        capture_frame(frame);
+        //capture_frame(frame);
     }
 }
 
