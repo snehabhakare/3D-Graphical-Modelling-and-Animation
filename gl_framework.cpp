@@ -13,10 +13,11 @@ extern std::vector<glm::vec3> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
 extern glm::mat4 projection_matrix, lookat_matrix;
 extern void read_keyframes();
+extern void initPath();
 int ch =0;
 bool op=false;
 extern bool mode, x;
-extern bool play_back, play_camera;
+extern bool play_back, play_camera, render_path;
 extern int key_frame;
 int f = 0;
 
@@ -356,7 +357,7 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	    {
-		x = false;
+			x = false;
 	    	std::ifstream myfile(filename);
 	    	if(!myfile){
 	    		std::cout << filename << " is missing" << std::endl;
@@ -371,8 +372,8 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
 	    {
-		x = false;
-		std::cout<<"Play the camera animation"<<std::endl;
+			x = false;
+			std::cout<<"Play the camera animation"<<std::endl;
 	    	if(control_points.size()==1){
 	    		c_xpos = control_points[0].x;
 	    		c_ypos = control_points[0].y;
@@ -382,6 +383,11 @@ namespace csX75
 	    		play_camera = true;
 	    		glfwSetTime(0.0);
 	    	}
+	    }
+	    else if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
+	    {
+	    	render_path = !render_path;
+	    	initPath();
 	    }
 
 	    else if (key == GLFW_KEY_A && action == GLFW_PRESS)
@@ -597,22 +603,22 @@ namespace csX75
 			// x += (768 - xpos)/24 - 16;
 			// y += (768 - ypos)/24 - 13;
 			// z += 5;
-			xpos = xpos/(2*768) - 1;
-			ypos = 1-ypos/(2*768);
+			xpos = c_xpos -1+xpos/(2*768);
+			ypos = c_ypos +1-ypos/(2*768);
 
 			glm::vec3 point;
-			point = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(-0.5, 0.5, -0.5, 0.5));
+			point = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(c_xpos-0.5, c_xpos+0.5, c_ypos-0.5, c_ypos+0.5));
 			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
 			// point = glm::unProject(glm::vec3(xpos, ypos, 1), lookat_matrix, projection_matrix, glm::vec4(-0.5, 0.5, -0.5, 0.5));
 			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
-			point.x += c_xpos;
-			point.y += c_ypos;
+			// point.x += c_xpos;
+			// point.y += c_ypos;
 			std::cout << point.x << " " << point.y << " " << point.z << std::endl;
 			
 			control_points.push_back(point);
 			csX75::primitive p;
 		    glm::vec4 red = glm::vec4(1.0, 0.0, 0.0, 1.0);
-		    p = p.draw_cuboid(red, 0.5,0.5,0.5, glm::vec4(0));
+		    p = p.draw_cuboid(red, 0.1,0.1,0.1, glm::vec4(0));
 		    node = new csX75::HNode(NULL,p,tex_light);
 		    node->change_parameters(point.x,point.y,point.z,0.0,0.0,0.0);
 		    control_nodes.push_back(node);

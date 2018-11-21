@@ -36,7 +36,7 @@ int light=0;
 bool mode=true;
 bool play_back=false;
 bool play_camera = false;
-bool play_s = false;
+bool render_path = false;
 int key_frame = 0;
 unsigned int fr = 0;
 std::string filename = "keyframes2.txt";
@@ -66,9 +66,11 @@ std::vector<csX75::HNode*> chair_nodes;
 std::vector<csX75::HNode*> control_nodes;
 
 std::vector<glm::vec3> control_points;
+std::vector<glm::vec3> control_path;
 
 GLuint tex_glass, tex_ceil, tex_floor, tex_pat, tex_sofa, tex_wall, tex_wall_t, tex_wood, tex_wood_chair, tex_st, tex_box, tex_light, tex_s_wall, tex_wall_light;
 void read_keyframes();
+void initPath();
 //-------------------------------------------------------------------------
 
 #endif

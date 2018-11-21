@@ -27,6 +27,8 @@ GLfloat **key_f;
 unsigned char *pRGB;
 unsigned char *pRGB1;
 GLfloat th;
+int num_points = 0;
+GLuint vao,vbo; 
 //----------------------------------------------------------------
 
 void room()
@@ -838,6 +840,7 @@ void initBuffersGL(void)
   root_node = curr_node = scene_nodes[0];  
 }
 
+
 //-----------------------------------------------------------------------------------------------------------------------
 glm::vec3 getPoint(float t){
     std::vector<glm::vec3> Points = control_points;
@@ -848,6 +851,42 @@ glm::vec3 getPoint(float t){
     } 
     return Points[0];
 }
+
+void initPath(){
+	glm::vec3 point;
+	control_path.clear();
+	for(float i=0; i<=1; i+=0.1){
+		point = getPoint(i);
+		// std::cout << i << " " << point.x << " " << point.y << " " << point.z << std::endl;
+		control_path.push_back(point);
+	}
+
+	num_points = control_path.size();
+	std::vector<glm::vec3> colors(num_points, glm::vec3(1,0,0));
+	std::size_t vsize = sizeof(control_path[0]) * num_points;
+	std::size_t csize = sizeof(colors[0]) * num_points;
+	// initialize vao and vbo of the object;
+	//Ask GL for a Vertex Attribute Objects (vao)
+	glGenVertexArrays (1, &vao);
+	//Ask GL for aVertex Buffer Object (vbo)
+	glGenBuffers (1, &vbo);
+
+	//bind them
+	glBindVertexArray (vao);
+	glBindBuffer (GL_ARRAY_BUFFER, vbo);
+	
+	glBufferData (GL_ARRAY_BUFFER, vsize + csize, NULL, GL_STATIC_DRAW);
+	glBufferSubData( GL_ARRAY_BUFFER, 0, vsize, &control_path[0] );
+	glBufferSubData( GL_ARRAY_BUFFER, vsize, csize, &colors[0] );
+	
+	//setup the vertex array as per the shader
+	glEnableVertexAttribArray( vPosition );
+	glVertexAttribPointer( vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+
+	glEnableVertexAttribArray( vColor );
+	glVertexAttribPointer( vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vsize));
+}
+
 
 void capture_frame(unsigned int framenum)
 {
@@ -884,6 +923,7 @@ void capture_frame(unsigned int framenum)
 
     //function to store pRGB in a file named count
     delete pRGB;
+    delete pRGB1;
 }
 
 void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
@@ -1142,7 +1182,7 @@ void renderNode(csX75::HNode* curr, float x, float y)
     model_matrix = rotation_matrix;
 
     if(enable_perspective)
-        projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 700.0);
+        projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 100.0);
     else
         projection_matrix = glm::ortho(-16.0, 16.0, -16.0, 16.0, -100.0, 200.0);
 
@@ -1237,12 +1277,13 @@ void renderGL(unsigned int frame)
 		    renderNode(phineas_nodes[0], 0.0, 3.0);
 		    renderNode(perry_nodes[0], 0.0, 3.0 );
 	    }
-            if(!play_back || !play_camera)
+        if(!play_back || !play_camera)
 	    {
-		GLfloat *q = box_nodes[1]->get_parameters();
-		if(q[3]<=-60 || x){
-		    renderNode(phineas_nodes[0], 0.0, 3.0);
-		    renderNode(perry_nodes[0], 0.0, 3.0 );}
+			GLfloat *q = box_nodes[1]->get_parameters();
+			if(q[3]<=-60 || x){
+			    renderNode(phineas_nodes[0], 0.0, 3.0);
+			    renderNode(perry_nodes[0], 0.0, 3.0 );
+			}
 	    }
 	    for(int i=0; i<control_nodes.size(); i++)
             renderNode(control_nodes[i], 0.0, 0.0);
@@ -1250,7 +1291,7 @@ void renderGL(unsigned int frame)
     else
     {
         if(enable_perspective)
-            projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 700.0);
+            projection_matrix = glm::frustum(-0.5, 0.5, -0.5, 0.5, 1.0, 100.0);
         else
             projection_matrix = glm::ortho(-16.0, 16.0, -16.0, 16.0, -100.0, 200.0);
 
@@ -1266,8 +1307,8 @@ void renderGL(unsigned int frame)
 	
         view_matrix = projection_matrix*lookat_matrix;
 
-	if(!play_back)
-		view_matrix = view_matrix * model_matrix;
+		if(!play_back)
+			view_matrix = view_matrix * model_matrix;
 
         matrixStack.push_back(view_matrix);
 
@@ -1280,26 +1321,32 @@ void renderGL(unsigned int frame)
         chair_nodes[0]->render_tree();
         lamp_nodes[0]->render_tree();
         box_nodes[0]->render_tree();
-    if((play_back && x) || (play_camera && x))
-    {
-        phineas_nodes[0]->render_tree();
-        perry_nodes[0]->render_tree();
-    }
-    if(!play_back || !play_camera)
-    {
-	GLfloat *q = box_nodes[1]->get_parameters();
-	if(q[3]<=-60 || x){
-	phineas_nodes[0]->render_tree();
-        perry_nodes[0]->render_tree();}
+	    if((play_back && x) || (play_camera && x))
+	    {
+	        phineas_nodes[0]->render_tree();
+	        perry_nodes[0]->render_tree();
+	    }
+	    if(!play_back || !play_camera)
+	    {
+			GLfloat *q = box_nodes[1]->get_parameters();
+			if(q[3]<=-60 || x){
+			phineas_nodes[0]->render_tree();
+	        perry_nodes[0]->render_tree();}
 	    }
 
         for(int i=0; i<control_nodes.size(); i++)
             control_nodes[i]->render_tree();  
-    }
+	}
 
     if(play_back || play_camera){
         // std::cout << frame << std::endl;
         capture_frame(frame);
+    }
+
+    if(render_path){
+    	// std::cout << control_points.size() << std::endl;
+    	glBindVertexArray (vao);
+		glDrawArrays(GL_TRIANGLES, 0, control_points.size());
     }
 }
 

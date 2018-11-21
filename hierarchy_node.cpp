@@ -150,8 +150,6 @@ namespace csX75
 	void HNode::render(){
 		glm::vec4 c = get_centroid();
 
-		//std::cout<<num_vertices<<std::endl;
-  		//std::cout<<c[0]<<" "<<c[1]<<" "<<c[2]<<" "<<c[3]<<std::endl;
 		//matrixStack multiply
 		glm::mat4* ms_mult = multiply_stack(matrixStack);
 		glBindTexture(GL_TEXTURE_2D, textures);
