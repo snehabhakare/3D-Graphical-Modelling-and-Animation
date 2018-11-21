@@ -26,7 +26,7 @@ GLfloat in_frame[num_params];
 GLfloat **key_f;
 unsigned char *pRGB;
 unsigned char *pRGB1;
-
+GLfloat th;
 //----------------------------------------------------------------
 
 void room()
@@ -50,7 +50,7 @@ void room()
 
     // back wall(top fourth) -> 2
     p = p.draw_cuboid(color_wall, 10.0,20.0,1.0, origin);
-    node = new csX75::HNode(room_nodes[1],p, tex_s_wall);
+    node = new csX75::HNode(room_nodes[1],p, tex_wall);
     node->change_parameters(15.0,15.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node);
 
@@ -62,7 +62,7 @@ void room()
 
     // back wall(bottom fourth) -> 4
     p = p.draw_cuboid(color_wall, 10.0,20.0,1.0, origin);
-    node = new csX75::HNode(room_nodes[1],p, tex_s_wall);
+    node = new csX75::HNode(room_nodes[1],p, tex_wall);
     node->change_parameters(15.0,-15.0,0.0,0.0,0.0,0.0);
     room_nodes.push_back(node);
 
@@ -86,21 +86,21 @@ void room()
 
    // left wall -> 8
     p = p.draw_cuboid(color_wall, 50.0,50.0,1.0, origin);
-    node = new csX75::HNode(room_nodes[0],p, tex_wall);
+    node = new csX75::HNode(room_nodes[0],p, tex_s_wall);
     node->change_parameters(-24.5,0.0,-25.5,0.0,-90.0,0.0);
     room_nodes.push_back(node);
 
     // right wall -> 9
     p = p.draw_cuboid(color_wall, 50.0,50.0,1.0, origin);
-    node = new csX75::HNode(room_nodes[0],p, tex_wall);
+    node = new csX75::HNode(room_nodes[0],p, tex_s_wall);
     node->change_parameters(24.5,0.0,-25.5,0.0,-90.0,0.0);
     room_nodes.push_back(node);
    
     // ceiling -> 10
-    /*p = p.draw_cuboid(color_wall, 50.0,50.0,1.0, origin);
+    p = p.draw_cuboid(color_wall, 50.0,50.0,1.0, origin);
     node = new csX75::HNode(room_nodes[0],p, tex_ceil);
     node->change_parameters(0.0,0.0,-50.0,0.0,0.0,0.0);
-    room_nodes.push_back(node);*/
+    room_nodes.push_back(node);
 }
 
 //-----------------------------------------------------------------
@@ -792,8 +792,8 @@ void initBuffersGL(void)
   tex_st=LoadTexture("textures/lamp_stand.bmp",251,201);
   tex_box=LoadTexture("textures/box.bmp",768,1024);
   tex_light=LoadTexture("textures/light.bmp",390,280);
-  //tex_s_wall=LoadTexture("textures/pattern.bmp",225,225);
-  tex_s_wall = tex_wall;
+  tex_s_wall=LoadTexture("textures/wall.bmp",1024,680);
+  //tex_s_wall = tex_wall;
   tex_wall_light=LoadTexture("textures/wall_light.bmp",480,480);
 
   // Load shaders and use the resulting shader program
@@ -916,10 +916,12 @@ void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
 	atx = p[0];
 	aty = p[1];
 	atz = p[2];
-	if(in_frame[c] == p[3] && p[3]!=0)
+	if(in_frame[c] == p[3] && p[3]<-80){
 		x = true;
-	//if(x && p[3] > -80)
-		//x = false;
+		th = p[3];
+	}
+	if(x && p[3] > th)
+		x = false;
 	arx = in_frame[c]; c++;
 	ary = p[4];
 	arz = p[5];
@@ -1238,7 +1240,7 @@ void renderGL(unsigned int frame)
             if(!play_back || !play_camera)
 	    {
 		GLfloat *q = box_nodes[1]->get_parameters();
-		if(q[3]<=-90 || x){
+		if(q[3]<=-80 || x){
 		    renderNode(phineas_nodes[0], 0.0, 3.0);
 		    renderNode(perry_nodes[0], 0.0, 3.0 );}
 	    }
@@ -1286,7 +1288,7 @@ void renderGL(unsigned int frame)
     if(!play_back || !play_camera)
     {
 	GLfloat *q = box_nodes[1]->get_parameters();
-	if(q[3]<=-90 || x){
+	if(q[3]<=-80 || x){
 	phineas_nodes[0]->render_tree();
         perry_nodes[0]->render_tree();}
 	    }
