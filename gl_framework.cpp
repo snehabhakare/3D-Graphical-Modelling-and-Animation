@@ -15,7 +15,7 @@ extern glm::mat4 projection_matrix, model_matrix, view_matrix;
 extern void read_keyframes();
 int ch =0;
 bool op=false;
-extern bool mode;
+extern bool mode, x;
 extern bool play_back, play_camera;
 extern int key_frame;
 int f = 0;
@@ -356,6 +356,7 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	    {
+		x = false;
 	    	std::ifstream myfile(filename);
 	    	if(!myfile){
 	    		std::cout << filename << " is missing" << std::endl;
@@ -370,6 +371,8 @@ namespace csX75
 
 	    else if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
 	    {
+		x = false;
+		std::cout<<"Play the camera animation"<<std::endl;
 	    	if(control_points.size()==1){
 	    		c_xpos = control_points[0].x;
 	    		c_ypos = control_points[0].y;
@@ -592,8 +595,9 @@ namespace csX75
 		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 			// std::cout << xpos << " " << ypos << std::endl;
 			x += (768 - xpos)/24 - 16;
-			y += (768 - xpos)/24 - 16;
+			y += (768 - ypos)/24 - 13;
 			z += 5;
+
 			GLdouble *model = (GLdouble*)glm::value_ptr(model_matrix);
 			GLdouble *proj = (GLdouble*)glm::value_ptr(projection_matrix);
 			GLint *view = (GLint*)glm::value_ptr(view_matrix);
@@ -602,7 +606,7 @@ namespace csX75
 			gluUnProject(xpos, ypos, 0, model, proj, view, &ox, &oy, &oz);
 			// std::cout << ox << " " << oy << " " << oz << std::endl;
 			gluUnProject(xpos, ypos, 1, model, proj, view, &ox, &oy, &oz);
-			// std::cout << ox << " " << oy << " " << oz << std::endl;
+			//std::cout << ox << " " << oy << " " << oz << std::endl;
 			
 			control_points.push_back(glm::vec3(x,y,z));
 			csX75::primitive p;

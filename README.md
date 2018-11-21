@@ -7,7 +7,7 @@ Sneha Bhakare - 150050040, Sukanya Bhattacharjee - 174050012
 
 
 ## Disclaimer
-The code in the repository is completely our work and not copied from any where. The tutorials 5,6 and 7 codes are used as the basecode.
+The code in the repository is completely our work and not copied from any where. The tutorials 5,6 and 7 codes are used as the basecode. Online reference used for saving frames as PPM files.
 
 ## Key Controls
 

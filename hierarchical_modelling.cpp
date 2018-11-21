@@ -467,7 +467,7 @@ void box()
     // box -> 0
     p = p.draw_cuboid_oc(color_out, color_in, 8.0, 8.0, 6.0, origin);
     node = new csX75::HNode(NULL,p, tex_box); 
-    node->change_parameters(0.0,0.0,0.0,0.0,180.0,0.0);
+    node->change_parameters(0.0,-1.0,0.0,0.0,180.0,0.0);
     box_nodes.push_back(node);
 
     // lid -> 1
@@ -491,7 +491,7 @@ void perry()
     //body -> 0
     p = p.draw_trapezoid_cuboid(color_body, 1.5, 0.5, 0.5, 0.5, origin);
     node = new csX75::HNode(NULL,p,tex_light); 
-    node->change_parameters(-3.0,4.0,0.0,0.0,0.0,0.0);
+    node->change_parameters(-2.6,3.0,0.0,0.0,0.0,0.0);
     perry_nodes.push_back(node);
 
     //left thigh -> 1
@@ -622,7 +622,7 @@ void phineas()
     //hip -> 0
     p = p.draw_cuboid(blue, 1.2,0.2,1.2, origin);
     node = new csX75::HNode(NULL,p,tex_light);
-    node->change_parameters(1.0,3.5,0.0,0.0,0.0,0.0);
+    node->change_parameters(1.2,2.5,0.0,0.0,0.0,0.0);
     phineas_nodes.push_back(node);
     
     // left thigh -> 1
@@ -914,6 +914,10 @@ void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
 	atx = p[0];
 	aty = p[1];
 	atz = p[2];
+	if(in_frame[c] == p[3] && p[3]!=0)
+		x = true;
+	//if(x && p[3] > -80)
+		//x = false;
 	arx = in_frame[c]; c++;
 	ary = p[4];
 	arz = p[5];
@@ -1148,7 +1152,10 @@ void renderNode(csX75::HNode* curr, float x, float y)
 
     //Creating the lookat matrix
     lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
-    view_matrix = projection_matrix*lookat_matrix*model_matrix;
+    view_matrix = projection_matrix*lookat_matrix;
+
+    if(!play_back)
+	view_matrix = view_matrix * model_matrix;
     
     matrixStack.push_back(view_matrix);
 
@@ -1221,9 +1228,18 @@ void renderGL(unsigned int frame)
 	    renderNode(chair_nodes[0], 0.0, 0.0);
 	    renderNode(lamp_nodes[0], 0.0, 0.0);
 	    renderNode(box_nodes[0], 0.0, 0.0);
-	    renderNode(phineas_nodes[0], -1.25, 3.0);
-	    renderNode(perry_nodes[0], -3.0, 3.0 );
-            
+	    if((play_back && x) || (play_back && x))
+	    {
+		    renderNode(phineas_nodes[0], 0.0, 3.0);
+		    renderNode(perry_nodes[0], 0.0, 3.0 );
+	    }
+            if(!play_back || !play_camera)
+	    {
+		GLfloat *q = box_nodes[1]->get_parameters();
+		if(q[3]<=-90 || x){
+		    renderNode(phineas_nodes[0], 0.0, 3.0);
+		    renderNode(perry_nodes[0], 0.0, 3.0 );}
+	    }
 	    for(int i=0; i<control_nodes.size(); i++)
             renderNode(control_nodes[i], 0.0, 0.0);
     }
@@ -1243,7 +1259,11 @@ void renderGL(unsigned int frame)
         glm::vec4 c_up = glm::vec4(c_up_x,c_up_y,c_up_z, 1.0)*c_rotation_matrix;
         //Creating the lookat matrix
         lookat_matrix = glm::lookAt(glm::vec3(c_pos),glm::vec3(0.0),glm::vec3(c_up));
+	
         view_matrix = projection_matrix*lookat_matrix;
+
+	if(!play_back)
+		view_matrix = view_matrix * model_matrix;
 
         matrixStack.push_back(view_matrix);
 
@@ -1256,8 +1276,18 @@ void renderGL(unsigned int frame)
         chair_nodes[0]->render_tree();
         lamp_nodes[0]->render_tree();
         box_nodes[0]->render_tree();
-        perry_nodes[0]->render_tree();
+    if((play_back && x) || (play_camera && x))
+    {
         phineas_nodes[0]->render_tree();
+        perry_nodes[0]->render_tree();
+    }
+    if(!play_back || !play_camera)
+    {
+	GLfloat *q = box_nodes[1]->get_parameters();
+	if(q[3]<=-90 || x){
+	phineas_nodes[0]->render_tree();
+        perry_nodes[0]->render_tree();}
+	    }
 
         for(int i=0; i<control_nodes.size(); i++)
             control_nodes[i]->render_tree();  
@@ -1328,7 +1358,7 @@ int main(int argc, char** argv)
     //Initialize GL state
     csX75::initGL();
     initBuffersGL();
-    glfwSetTime(30.f);
+    //glfwSetTime(30.f);
 
     int numf = 0, j = 0;
     int total_frames = 5*in_bet;
@@ -1350,8 +1380,10 @@ int main(int argc, char** argv)
                 numf++;
                 if(numf == total_frames){
                     play_camera = false;
+		    //x= true;
                     numf = 0;
                     u = 0;
+		    std::cout<<"Returning to last modelling session"<<std::endl;
                 }
             }
         }
@@ -1371,8 +1403,10 @@ int main(int argc, char** argv)
                 if(j == key_frame-1)
                 {
                     play_back=false;
+		    //x = false;
                     numf = 0;
                     j = 0;
+		    std::cout<<"Returning to last modelling session"<<std::endl;
                 }
             }
         }
