@@ -1411,8 +1411,19 @@ int main(int argc, char** argv)
     initBuffersGL();
     //glfwSetTime(30.f);
 
+    // control_points.push_back(glm::vec3(25,0,25));
+    // control_points.push_back(glm::vec3(20,0,20));
+    // control_points.push_back(glm::vec3(10,0,25));
+    // control_points.push_back(glm::vec3(0,10,20));
+    // control_points.push_back(glm::vec3(-10,10,10));
+    // control_points.push_back(glm::vec3(-15,10,0));
+    // control_points.push_back(glm::vec3(-15,10,-10));
+    // control_points.push_back(glm::vec3(-15,0,-25));
+    // control_points.push_back(glm::vec3(-5,0,-22));
+    // control_points.push_back(glm::vec3(0,0,-22));
+
     int numf = 0, j = 0;
-    int total_frames = 5*in_bet;
+    int total_frames = 8*in_bet;
     double du = 1.0/total_frames;
     double u = 0, k = 0;
     double tf = 1/float(in_bet);
@@ -1428,10 +1439,10 @@ int main(int argc, char** argv)
                 c_zpos = pos.z;
                 // std::cout << u << " " << c_xpos << " " << c_ypos << " " << c_zpos << std::endl;
                 u += du;    
-                numf++;
-                if(numf == total_frames){
+                fr++;
+                if(fr == total_frames){
                     play_camera = false;
-                    numf = 0;
+                    fr = 0;
                     u = 0;
 		    		std::cout<<"Returning to last modelling session"<<std::endl;
                 }

@@ -19,7 +19,7 @@ void main ()
 
   //Material 1
   vec4 diffuse1 = vec4(1.0, 1.0, 1.0, 1.0); 
-  vec4 ambient1 = vec4(0.1, 0.1, 0.1, 1.0);
+  vec4 ambient1 = vec4(0.3, 0.3, 0.3, 1.0);
   vec4 specular1 = vec4(0.1, 0.1, 0.1, 1.0);
   float shininess1 = 1.0;
 
