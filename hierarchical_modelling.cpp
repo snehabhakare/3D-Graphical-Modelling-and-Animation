@@ -1435,17 +1435,6 @@ int main(int argc, char** argv)
     initBuffersGL();
     //glfwSetTime(30.f);
 
-    control_points.push_back(glm::vec3(25,0,25));
-     control_points.push_back(glm::vec3(20,0,20));
-    control_points.push_back(glm::vec3(10,0,25));
-     control_points.push_back(glm::vec3(0,10,20));
-     control_points.push_back(glm::vec3(-10,10,10));
-    control_points.push_back(glm::vec3(-15,10,0));
-     control_points.push_back(glm::vec3(-15,10,-10));
-     control_points.push_back(glm::vec3(-15,0,-25));
-     control_points.push_back(glm::vec3(-5,0,-22));
-     control_points.push_back(glm::vec3(0,0,-22));
-
     int numf = 0, j = 0;
     int total_frames = 8*in_bet;
     double du = 1.0/total_frames;
