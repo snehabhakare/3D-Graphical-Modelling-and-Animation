@@ -39,14 +39,13 @@ bool play_camera = false;
 bool play_s = false;
 int key_frame = 0;
 unsigned int fr = 0;
-std::string filename = "keyframes1.txt";
+std::string filename = "keyframes2.txt";
 bool x = false;
 
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;
 glm::mat4 projection_matrix;
-glm::mat4 model_matrix;
-glm::mat4 view_matrix;
+glm::mat4 lookat_matrix;
 
 csX75::HNode* root_node;
 csX75::HNode* curr_node;

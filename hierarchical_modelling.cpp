@@ -11,9 +11,9 @@ GLuint t;
 glm::mat4 rotation_matrix;
 // glm::mat4 projection_matrix;
 glm::mat4 c_rotation_matrix;
-// glm::mat4 model_matrix;
-glm::mat4 lookat_matrix;
-// glm::mat4 view_matrix;
+glm::mat4 model_matrix;
+// glm::mat4 lookat_matrix;
+glm::mat4 view_matrix;
 glm::mat3 normal_matrix;
 
 GLuint uModelViewMatrix, normalMatrix, viewMatrix, Light;
@@ -1384,10 +1384,9 @@ int main(int argc, char** argv)
                 numf++;
                 if(numf == total_frames){
                     play_camera = false;
-		    //x= true;
                     numf = 0;
                     u = 0;
-		    std::cout<<"Returning to last modelling session"<<std::endl;
+		    		std::cout<<"Returning to last modelling session"<<std::endl;
                 }
             }
         }
@@ -1407,10 +1406,9 @@ int main(int argc, char** argv)
                 if(j == key_frame-1)
                 {
                     play_back=false;
-		    //x = false;
                     numf = 0;
                     j = 0;
-		    std::cout<<"Returning to last modelling session"<<std::endl;
+		    		std::cout<<"Returning to last modelling session"<<std::endl;
                 }
             }
         }

@@ -11,7 +11,7 @@ extern GLuint tex_light;
 extern csX75::HNode* curr_node, *node, *root_node;
 extern std::vector<glm::vec3> control_points;
 extern std::vector<csX75::HNode*> phineas_nodes, box_nodes, perry_nodes, scene_nodes, room_nodes, table_nodes, control_nodes;
-extern glm::mat4 projection_matrix, model_matrix, view_matrix;
+extern glm::mat4 projection_matrix, lookat_matrix;
 extern void read_keyframes();
 int ch =0;
 bool op=false;
@@ -594,28 +594,29 @@ namespace csX75
 		glfwGetCursorPos(window, &xpos, &ypos);
 		if(button==GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 			// std::cout << xpos << " " << ypos << std::endl;
-			x += (768 - xpos)/24 - 16;
-			y += (768 - ypos)/24 - 13;
-			z += 5;
+			// x += (768 - xpos)/24 - 16;
+			// y += (768 - ypos)/24 - 13;
+			// z += 5;
+			xpos = xpos/(2*768) - 1;
+			ypos = 1-ypos/(2*768);
 
-			GLdouble *model = (GLdouble*)glm::value_ptr(model_matrix);
-			GLdouble *proj = (GLdouble*)glm::value_ptr(projection_matrix);
-			GLint *view = (GLint*)glm::value_ptr(view_matrix);
-
-			double ox, oy, oz;
-			gluUnProject(xpos, ypos, 0, model, proj, view, &ox, &oy, &oz);
-			// std::cout << ox << " " << oy << " " << oz << std::endl;
-			gluUnProject(xpos, ypos, 1, model, proj, view, &ox, &oy, &oz);
-			//std::cout << ox << " " << oy << " " << oz << std::endl;
+			glm::vec3 point;
+			point = glm::unProject(glm::vec3(xpos, ypos, 0), lookat_matrix, projection_matrix, glm::vec4(-0.5, 0.5, -0.5, 0.5));
+			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
+			// point = glm::unProject(glm::vec3(xpos, ypos, 1), lookat_matrix, projection_matrix, glm::vec4(-0.5, 0.5, -0.5, 0.5));
+			// std::cout << point.x << " " << point.y << " " << point.z << std::endl;
+			point.x += c_xpos;
+			point.y += c_ypos;
+			std::cout << point.x << " " << point.y << " " << point.z << std::endl;
 			
-			control_points.push_back(glm::vec3(x,y,z));
+			control_points.push_back(point);
 			csX75::primitive p;
 		    glm::vec4 red = glm::vec4(1.0, 0.0, 0.0, 1.0);
 		    p = p.draw_cuboid(red, 0.5,0.5,0.5, glm::vec4(0));
 		    node = new csX75::HNode(NULL,p,tex_light);
-		    node->change_parameters(x,y,z,0.0,0.0,0.0);
+		    node->change_parameters(point.x,point.y,point.z,0.0,0.0,0.0);
 		    control_nodes.push_back(node);
-			std::cout << "Selected Point: " << x << ", " << y << ", " << z << std::endl;
+			// std::cout << "Selected Point: " << x << ", " << y << ", " << z << std::endl;
 		}
 	}
 };  
