@@ -41,6 +41,7 @@ int key_frame = 0;
 unsigned int fr = 0;
 std::string filename = "keyframes2.txt";
 bool x = false;
+bool capture = false;
 
 //global matrix stack for hierarchical modelling
 std::vector<glm::mat4> matrixStack;

@@ -894,7 +894,7 @@ void capture_frame(unsigned int framenum)
     int SCREEN_HEIGHT=768;
     //global pointer float *pRGB
     pRGB = new unsigned char [3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1) ];
-    pRGB1 = new unsigned char [3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1) ];
+    //pRGB1 = new unsigned char [3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1) ];
 
     // set the framebuffer to read
     //default for double buffered
@@ -903,7 +903,7 @@ void capture_frame(unsigned int framenum)
     glPixelStoref(GL_PACK_ALIGNMENT,1);//for word allignment
 
     glReadPixels(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pRGB);
-    unsigned int i=0, j=0;
+    /*unsigned int i=0, j=0;
     for(unsigned int x=0; x<SCREEN_WIDTH; x++)
         for(unsigned int y=0;y<SCREEN_HEIGHT; y++)
         {
@@ -912,18 +912,18 @@ void capture_frame(unsigned int framenum)
             pRGB1[j] = (unsigned char)(pRGB[i]);
             pRGB1[j+1]=(unsigned char)(pRGB[i+1]);
             pRGB1[j+2]=(unsigned char)(pRGB[i+2]);
-        }
+        }*/
     char filename[200];
     sprintf(filename,"./frames/frame_%04d.ppm",framenum);
     std::ofstream out(filename, std::ios::out);
     out<<"P6"<<std::endl;
     out<<SCREEN_WIDTH<<" "<<SCREEN_HEIGHT<<" 255"<<std::endl;
-    out.write(reinterpret_cast<char const *>(pRGB1), (3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1)) * sizeof(int));
+    out.write(reinterpret_cast<char const *>(pRGB), (3 * (SCREEN_WIDTH+1) * (SCREEN_HEIGHT + 1)) * sizeof(int));
     out.close();
 
     //function to store pRGB in a file named count
     delete pRGB;
-    delete pRGB1;
+    //delete pRGB1;
 }
 
 void renderFrame(GLfloat q[], GLfloat r[], GLfloat k, unsigned int frame)
@@ -1338,8 +1338,8 @@ void renderGL(unsigned int frame)
             control_nodes[i]->render_tree();  
 	}
 
-    if(play_back || play_camera){
-        // std::cout << frame << std::endl;
+    if((play_back || play_camera) && capture){
+        //std::cout << frame << std::endl;
         capture_frame(frame);
     }
 
@@ -1411,16 +1411,16 @@ int main(int argc, char** argv)
     initBuffersGL();
     //glfwSetTime(30.f);
 
-    // control_points.push_back(glm::vec3(25,0,25));
-    // control_points.push_back(glm::vec3(20,0,20));
-    // control_points.push_back(glm::vec3(10,0,25));
-    // control_points.push_back(glm::vec3(0,10,20));
-    // control_points.push_back(glm::vec3(-10,10,10));
-    // control_points.push_back(glm::vec3(-15,10,0));
-    // control_points.push_back(glm::vec3(-15,10,-10));
-    // control_points.push_back(glm::vec3(-15,0,-25));
-    // control_points.push_back(glm::vec3(-5,0,-22));
-    // control_points.push_back(glm::vec3(0,0,-22));
+    control_points.push_back(glm::vec3(25,0,25));
+     control_points.push_back(glm::vec3(20,0,20));
+    control_points.push_back(glm::vec3(10,0,25));
+     control_points.push_back(glm::vec3(0,10,20));
+     control_points.push_back(glm::vec3(-10,10,10));
+    control_points.push_back(glm::vec3(-15,10,0));
+     control_points.push_back(glm::vec3(-15,10,-10));
+     control_points.push_back(glm::vec3(-15,0,-25));
+     control_points.push_back(glm::vec3(-5,0,-22));
+     control_points.push_back(glm::vec3(0,0,-22));
 
     int numf = 0, j = 0;
     int total_frames = 8*in_bet;
@@ -1442,7 +1442,7 @@ int main(int argc, char** argv)
                 fr++;
                 if(fr == total_frames){
                     play_camera = false;
-                    fr = 0;
+		    fr--;
                     u = 0;
 		    		std::cout<<"Returning to last modelling session"<<std::endl;
                 }
