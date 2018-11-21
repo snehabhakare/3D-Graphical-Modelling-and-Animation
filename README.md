@@ -21,6 +21,7 @@ The code in the repository is completely our work and not copied from any where.
 6. Left mouse click - set a control point
 7. Enter - save configuration of keyframe
 8. SpaceBar - play the animation
+9. Minus - play camera animation
 
 | Keys    | Global Mode (Rotation of all the models)     | Individual Mode (Translation of camera)   |
 |---------|----------------------------------------------|-------------------------------------------|
